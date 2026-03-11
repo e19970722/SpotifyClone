@@ -8,7 +8,7 @@
 import Foundation
 
 struct MusicItem: Identifiable {
-    var id: String = UUID().uuidString
+    var id: String
     let artist: String
     let artistImageName: String
     let songName: String
@@ -17,13 +17,16 @@ struct MusicItem: Identifiable {
     let songUrl: String?
     let duration: Double?
     
-    init(artist: String,
+    init(id: String = UUID().uuidString,
+         artist: String,
          artistImageName: String,
          songName: String,
          albumName: String,
          albumImageName: String,
          songUrl: String?,
-         duration: Double?) {
+         duration: Double?)
+    {
+        self.id = id
         self.artist = artist
         self.artistImageName = artistImageName
         self.songName = songName

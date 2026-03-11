@@ -9,25 +9,21 @@ import SwiftUI
 
 struct AlbumImageTextView: View {
     
-    var imageName: String
-    var description: String
+    let imageName: String
+    let description: String
     
     var body: some View {
-        GeometryReader { geo in
-            
-            let imageWidth = geo.size.width
-            VStack(alignment: .center, spacing: 8) {
-                Image(imageName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: imageWidth, height: imageWidth)
-                    
-                Text(description)
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundColor(.secondaryTextColor2)
-                    .frame(width: imageWidth, alignment: .leading)
-            }
-            .frame(width: geo.size.width)
+        VStack(alignment: .center, spacing: 8) {
+            Image(imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                
+            Text(description)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(.secondaryTextColor2)
+                .minimumScaleFactor(0.5)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
@@ -36,4 +32,5 @@ struct AlbumImageTextView: View {
     AlbumImageTextView(imageName: DeveloperPreview.instance.currentSong.albumImageName,
                        description: DeveloperPreview.instance.currentSong.albumName)
     .background(.black)
+    .frame(width: 200, height: 200)
 }

@@ -53,12 +53,30 @@ class DeveloperPreview {
     
     
     lazy var songs = [
-        self.currentSong,
-        self.currentSong,
-        self.currentSong,
-        self.currentSong,
-        self.currentSong,
-        self.currentSong
+        MusicItem(id: "1",
+                  artist: self.artist,
+                  artistImageName: "Artist",
+                  songName: self.song,
+                  albumName: self.song,
+                  albumImageName: self.albumImage,
+                  songUrl: self.songUrl,
+                  duration: 29),
+        MusicItem(id: "2",
+                  artist: self.artist,
+                  artistImageName: "Artist",
+                  songName: self.song,
+                  albumName: self.song,
+                  albumImageName: self.albumImage,
+                  songUrl: self.songUrl,
+                  duration: 29),
+        MusicItem(id: "3",
+                  artist: self.artist,
+                  artistImageName: "Artist",
+                  songName: self.song,
+                  albumName: self.song,
+                  albumImageName: self.albumImage,
+                  songUrl: self.songUrl,
+                  duration: 29)
     ]
     
     lazy var playLists = [

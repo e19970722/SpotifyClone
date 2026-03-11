@@ -12,14 +12,16 @@ struct HomeSectionView: View {
     var section: HomeSection
     
     var body: some View {
-        GeometryReader { geo in
-            VStack(alignment: .leading, spacing: 16) {
-                Text(section.title)
-                    .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(.white)
-                
-                albumsView(fullWidth: geo.size.width)
-            }
+        VStack(alignment: .leading, spacing: 16) {
+            Text(section.title)
+                .font(.system(size: 28, weight: .bold))
+                .foregroundColor(.white)
+                .minimumScaleFactor(0.5)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, .design.padding16)
+            
+            albumsView(fullWidth: UIScreen.main.bounds.size.width)
         }
     }
 }
@@ -43,33 +45,13 @@ extension HomeSectionView {
         
         return ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack(spacing: 16) {
-//                ForEach(section.albums) { album in
-//                    AlbumImageTextView(imageName: album.albumImageName,
-//                                       description: album.albumName)
-//                        .frame(width: itemWidth)
-//                }
-                
-                if let firstAlbum = self.section.albums.first {
-                    AlbumImageTextView(imageName: firstAlbum.albumImageName,
-                                       description: firstAlbum.albumName)
-                        .frame(width: itemWidth)
-                    AlbumImageTextView(imageName: firstAlbum.albumImageName,
-                                       description: firstAlbum.albumName)
-                        .frame(width: itemWidth)
-                    AlbumImageTextView(imageName: firstAlbum.albumImageName,
-                                       description: firstAlbum.albumName)
-                        .frame(width: itemWidth)
-                    AlbumImageTextView(imageName: firstAlbum.albumImageName,
-                                       description: firstAlbum.albumName)
-                        .frame(width: itemWidth)
-                    AlbumImageTextView(imageName: firstAlbum.albumImageName,
-                                       description: firstAlbum.albumName)
-                        .frame(width: itemWidth)
-                    AlbumImageTextView(imageName: firstAlbum.albumImageName,
-                                       description: firstAlbum.albumName)
-                        .frame(width: itemWidth)
+                ForEach(section.albums) { album in
+                    AlbumImageTextView(imageName: album.albumImageName,
+                                       description: album.albumName)
+                        .frame(width: itemWidth, height: itemWidth)
                 }
             }
+            .padding(.horizontal, .design.padding16)
         }
     }
 }

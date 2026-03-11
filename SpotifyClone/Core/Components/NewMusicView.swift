@@ -40,23 +40,26 @@ struct NewMusicView: View {
 extension NewMusicView {
     
     private func newMusicInfoView(height: CGFloat) -> some View {
-        return HStack {
+        return HStack(alignment: .center) {
             Image(artistImage)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: height, height: height)
                 .clipShape(Circle())
             
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text("New Music Video From \(newMusic.artist)")
                     .foregroundColor(.gray)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.system(size: 14, weight: .semibold))
                     .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Text(newMusic.song)
                     .foregroundColor(.white)
                     .font(.system(size: 16, weight: .semibold))
                     .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }

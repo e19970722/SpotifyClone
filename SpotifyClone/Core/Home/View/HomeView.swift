@@ -8,16 +8,21 @@
 import SwiftUI
 
 struct HomeView: View {
-    
     @EnvironmentObject private var vm: HomeViewModel
+    
+    private var screenHeight: CGFloat {
+        return UIScreen.main.bounds.height
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            MainInfoView(profileImageName: vm.user?.userImage ?? "Profile")
-            mainListView
+            mainInfoView
+            
+            ScrollView(.vertical, showsIndicators: false) {
+                mainListView
+            }
         }
-        .padding(.leading, 16)
-        .padding(.trailing, 16)
+        .clipShape(Rectangle())
         .background(Color.theme.background)
     }
 }
@@ -25,65 +30,63 @@ struct HomeView: View {
 #Preview {
     HomeView()
         .environmentObject(DeveloperPreview.instance.vm)
-    
 }
 
 extension HomeView {
     
-    private var mainListView: some View {
-        let bottomPadding = 24.0
-        let screenHeight = UIScreen.main.bounds.height
-        return List {
-            playlistsSectionView(screenHeight: screenHeight, bottomPadding: bottomPadding)
-            newMusicSectionView(screenHeight: screenHeight, bottomPadding: bottomPadding)
-            homeSectionsView(screenHeight: screenHeight, bottomPadding: bottomPadding)
+    private var mainInfoView: some View {
+        HStack(alignment: .center, spacing: 8) {
+            Image(.profile)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 36, height: 36)
+                .clipShape(Circle())
+            
+            FillSegmentBtnView(isSelected: .constant(false), title: "All")
+            FillSegmentBtnView(isSelected: .constant(false), title: "Music")
+            FillSegmentBtnView(isSelected: .constant(false), title: "Podcasts")
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, .design.padding16)
     }
     
-    private func playlistsSectionView(screenHeight: CGFloat, bottomPadding: CGFloat) -> some View {
-        Section {
+    private var mainListView: some View {
+        VStack(spacing: 24) {
             if let playlist = vm.playlists {
                 PlaylistCollectionSectionView(playlists: playlist)
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())
                     .frame(height: screenHeight * (257/874))
+                    .padding(.horizontal, .design.padding16)
+            }
+            
+            if let newMusicItem = vm.newMusic {
+                newMusicView(newMusicItem)
+            }
+            
+            if let homeSections = vm.homeSections {
+                homeSectionsView(homeSections)
             }
         }
-        .listRowBackground(Color.clear)
-        .padding(.bottom, bottomPadding)
     }
     
-    private func newMusicSectionView(screenHeight: CGFloat, bottomPadding: CGFloat) -> some View {
-        return Section {
-            if let newMusic = vm.newMusic {
-                NewMusicView(artistImage: newMusic.artistImage ?? "",
-                             newMusic: newMusic,
-                             videoImage: newMusic.videoImage ?? "")
-                .listRowSeparator(.hidden)
-                .listRowInsets(EdgeInsets())
-                .frame(height: screenHeight * 0.3)
-            }
-        }
-        .listRowBackground(Color.clear)
-        .padding(.bottom, bottomPadding)
+    private func playlistsView(_ playlist: [PlaylistItem]) -> some View {
+        PlaylistCollectionSectionView(playlists: playlist)
+            .frame(height: screenHeight * (257/874))
     }
     
-    /// @ViewBuilder用於條件式顯示View與否
-     @ViewBuilder
-     private func homeSectionsView(screenHeight: CGFloat, bottomPadding: CGFloat) -> some View {
-         if let homeSections = vm.homeSections, !homeSections.isEmpty {
-             ForEach(homeSections) { section in
-                 Section {
-                     HomeSectionView(section: section)
-                         .listRowSeparator(.hidden)
-                         .listRowInsets(EdgeInsets())
-                         .frame(height: screenHeight * section.heightPortion)
-                 }
-                 .listRowBackground(Color.clear)
-                 .padding(.bottom, bottomPadding)
-             }
+    private func newMusicView(_ item: NewMusicItem) -> some View {
+        NewMusicView(artistImage: item.artistImage ?? "",
+                     newMusic: item,
+                     videoImage: item.videoImage ?? "")
+            .frame(height: screenHeight * 0.3)
+            .padding(.horizontal, .design.padding16)
+    }
+    
+    private func homeSectionsView(_ sections: [HomeSection]) -> some View {
+         ForEach(sections) { section in
+             HomeSectionView(section: section)
+                 .frame(height: screenHeight * section.heightPortion)
          }
      }
 }
