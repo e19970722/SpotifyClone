@@ -10,24 +10,27 @@ import SwiftUI
 struct PlaylistCollectionView: View {
     
     let imageName: String
+    let imageURL: URL?
     let title: String
-    
+
+    init(imageName: String = "", imageURL: URL? = nil, title: String) {
+        self.imageName = imageName
+        self.imageURL = imageURL
+        self.title = title
+    }
+
     var body: some View {
         GeometryReader { geometry in
-            HStack(alignment: .center, spacing: 8) {
-                Image(imageName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: geometry.size.height,
-                           height: geometry.size.height)
-                    .clipped()
-                    .cornerRadius(2)
-                    .background(.black)
-                                
+            HStack(alignment: .center, spacing: 0) {
+                albumImage(size: geometry.size.height)
+
                 Text(title)
-                    .font(.system(size: 14,
-                                  weight: .semibold))
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(8)
             }
             .foregroundColor(.white)
             // 如果單純設定cornerRadius無效，額外給他個框框
@@ -36,6 +39,45 @@ struct PlaylistCollectionView: View {
                     .fill(Color.theme.secondaryBtn)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        }
+    }
+}
+
+extension PlaylistCollectionView {
+
+    @ViewBuilder
+    private func albumImage(size: CGFloat) -> some View {
+        if let url = imageURL {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                case .failure:
+                    Image(systemName: "music.note")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .padding(8)
+                        .foregroundColor(.white)
+                case .empty:
+                    ProgressView()
+                @unknown default:
+                    EmptyView()
+                }
+            }
+            .frame(width: size, height: size)
+            .clipped()
+            .cornerRadius(2)
+            .background(.black)
+        } else {
+            Image(imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: size, height: size)
+                .clipped()
+                .cornerRadius(2)
+                .background(.black)
         }
     }
 }

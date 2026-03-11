@@ -16,12 +16,7 @@ struct PlaylistCollectionSectionView: View {
         GeometryReader { geo in
             // 3個8px的Spacing
             let singleHeight = (geo.size.height - (3 * 8)) / 4
-            
-            var displayPlaylist = playlists[0...6]
-            let likedPlaylist = PlaylistItem(imageName: "heart",
-                                             title: "Liked Songs",
-                                             durationSum: "2h 50m")
-            displayPlaylist.insert(likedPlaylist, at: 0)
+
             let twoColums: [GridItem] = [
                 // spacing 控制左右
                 GridItem(.flexible(), spacing: 8),
@@ -29,8 +24,9 @@ struct PlaylistCollectionSectionView: View {
             ]
             // spacing 控制上下
             return LazyVGrid(columns: twoColums, spacing: 8) {
-                ForEach(displayPlaylist) { playlist in
+                ForEach(playlists) { playlist in
                     PlaylistCollectionView(imageName: playlist.imageName,
+                                           imageURL: playlist.imageURL,
                                            title: playlist.title)
                     .frame(height: singleHeight)
                 }
