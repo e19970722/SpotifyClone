@@ -10,6 +10,8 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var vm: HomeViewModel
     
+    @State private var selectedSegment: HomeSegmentType = .all
+    
     private var screenHeight: CGFloat {
         return UIScreen.main.bounds.height
     }
@@ -45,9 +47,13 @@ extension HomeView {
                 .frame(width: 36, height: 36)
                 .clipShape(Circle())
             
-            FillSegmentBtnView(isSelected: .constant(false), title: "All")
-            FillSegmentBtnView(isSelected: .constant(false), title: "Music")
-            FillSegmentBtnView(isSelected: .constant(false), title: "Podcasts")
+            ForEach(HomeSegmentType.allCases, id: \.self) { segment in
+                FillSegmentBtnView(isSelected: Binding(
+                    get: { selectedSegment == segment },
+                    set: { isSelected in
+                        selectedSegment = isSelected ? segment : .all}
+                ), title: segment.title)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, .design.padding16)
