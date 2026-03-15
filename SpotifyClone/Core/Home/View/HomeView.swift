@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct HomeView: View {
-    @EnvironmentObject private var vm: HomeViewModel
+    @StateObject private var vm: HomeViewModel
     
     private var screenHeight: CGFloat {
         return UIScreen.main.bounds.height
+    }
+    
+    init() {
+        _vm = StateObject(wrappedValue: HomeViewModel())
     }
     
     var body: some View {
@@ -29,7 +33,6 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
-        .environmentObject(DeveloperPreview.instance.vm)
 }
 
 extension HomeView {

@@ -1,25 +1,25 @@
 //
 //  AppInitialView.swift
-//  SpotifyClone
+//  WellNewProject
 //
-//  Created by Yen Lin on 2026/3/11.
+//  Created by Yen Lin on 2025/10/27.
 //
 
 import SwiftUI
 
 struct AppInitialView: View {
-    @StateObject private var homeVM: HomeViewModel
     
-    init() {
-        _homeVM = StateObject(wrappedValue: HomeViewModel())
-    }
+    var isLoggedIn: Bool = true
     
-    var body: some View {
-        HomeView()
-            .environmentObject(homeVM)
-    }
+	var body: some View {
+        Group {
+            if isLoggedIn {
+                AppTabBarView()
+            }
+        }
+	}
 }
 
 #Preview {
-    AppInitialView()
+	AppInitialView()
 }
