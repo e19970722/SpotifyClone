@@ -21,7 +21,6 @@ class HomeViewModel: ObservableObject {
 
     init(service: HomeServiceProtocol = HomeService()) {
         self.service = service
-        fetchAlbums(artistName: "Mariah Carey", count: 8)
     }
 
     func fetchAlbums(artistName: String, count: Int) {

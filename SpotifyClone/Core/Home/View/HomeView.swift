@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject private var vm: HomeViewModel
+    @StateObject private var homeVM: HomeViewModel
     
     @State private var selectedSegment: HomeSegmentType = .all
     
@@ -17,7 +17,7 @@ struct HomeView: View {
     }
     
     init() {
-        _vm = StateObject(wrappedValue: HomeViewModel())
+        _homeVM = StateObject(wrappedValue: HomeViewModel())
     }
     
     var body: some View {
@@ -30,6 +30,12 @@ struct HomeView: View {
         }
         .clipShape(Rectangle())
         .background(Color.theme.background)
+        .onAppear {
+            homeVM.fetchAlbums(artistName: "Mariah Carey", count: 8)
+        }
+        .onTabAppear(tab: .home) {
+            homeVM.fetchAlbums(artistName: "Mariah Carey", count: 8)
+        }
     }
 }
 
@@ -61,7 +67,7 @@ extension HomeView {
     
     private var mainListView: some View {
         VStack(spacing: 24) {
-            if let playlist = vm.playlists {
+            if let playlist = homeVM.playlists {
                 PlaylistCollectionSectionView(playlists: playlist)
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())
@@ -69,11 +75,11 @@ extension HomeView {
                     .padding(.horizontal, .design.padding16)
             }
             
-            if let newMusicItem = vm.newMusic {
+            if let newMusicItem = homeVM.newMusic {
                 newMusicView(newMusicItem)
             }
             
-            if let homeSections = vm.homeSections {
+            if let homeSections = homeVM.homeSections {
                 homeSectionsView(homeSections)
             }
         }
