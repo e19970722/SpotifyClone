@@ -43,11 +43,13 @@ extension CustomTabBarView {
             
         } label: {
             VStack(spacing: 4) {
-                tabIconImageView(tab: tab)
+                let isSelected = (selection == tab)
+
+                tabIconImageView(isSelected: isSelected, tab: tab)
 
                 Text(tab.title)
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(.greyColor1)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(isSelected ? .white : .greyColor1)
             }
         }
         .frame(maxWidth: .infinity)
@@ -57,12 +59,12 @@ extension CustomTabBarView {
         selection = tab
     }
     
-    private func tabIconImageView(tab: TabBarItem) -> some View {
-        let iconImage = (selection == tab) ? tab.hightlightIconImageName : tab.normalIconImageName
+    private func tabIconImageView(isSelected: Bool, tab: TabBarItem) -> some View {
+        let iconImage = isSelected ? tab.hightlightIconImageName : tab.normalIconImageName
         return Image(systemName: iconImage)
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .tint(.greyColor1)
+            .tint(isSelected ? .white : .greyColor1)
             .frame(width: 36, height: 36)
     }
 }
