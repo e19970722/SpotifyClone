@@ -33,9 +33,17 @@ final class NetworkManager: NetworkManagerProtocol {
 
         do {
             (data, response) = try await session.data(for: urlRequest)
+            Utilities.shared.logMessage(target: endpoint.path,
+                                        message: String(data: data, encoding: .utf8) ?? "",
+                                        isSuccess: true)
+            
         } catch let urlError as URLError where urlError.code == .timedOut {
             throw NetworkError.timeout
+            
         } catch {
+            Utilities.shared.logMessage(target: endpoint.path,
+                                        message: error.localizedDescription,
+                                        isSuccess: true)
             throw NetworkError.underlying(error)
         }
 

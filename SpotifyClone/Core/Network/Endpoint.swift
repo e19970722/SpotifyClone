@@ -51,6 +51,30 @@ struct Endpoint {
         request.httpBody = body
         headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
 
+#if DEBUG
+        var requestStr = request.url?.absoluteString ?? "empty url"
+        if !headers.isEmpty {
+            requestStr += "\n📋 Headers: "
+            if let headersData = try? JSONSerialization.data(withJSONObject: headers, options: .prettyPrinted),
+               let headersJSON = String(data: headersData, encoding: .utf8) {
+                requestStr += headersJSON
+            } else {
+                requestStr += "\(headers)"
+            }
+        }
+        
+        if let body = body {
+            requestStr += "\n📄 Body: "
+            if let bodyString = String(data: body, encoding: .utf8) {
+                requestStr += bodyString
+            } else {
+                requestStr += "\(body.count) bytes (binary data)"
+            }
+        }
+        print("========================================")
+        print("📦 Request: \(requestStr)")
+#endif
+        
         return request
     }
 }
