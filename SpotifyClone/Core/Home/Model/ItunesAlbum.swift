@@ -7,13 +7,14 @@
 
 import Foundation
 
-struct ItunesSearchResponse: Decodable {
-    let results: [ItunesAlbum]
+struct ItunesAlbumResponse: Decodable {
+    let results: [ItunesAlbum]?
 }
 
-struct ItunesAlbum: Decodable {
-    let collectionId: Int
-    let collectionName: String
-    let artistName: String
-    let artworkUrl100: String
+struct ItunesAlbum: Codable, Identifiable {
+    let collectionId: Int?
+    let collectionName: String?
+    let artistName: String?
+    let artworkUrl100: String?
+    var id: Int? { collectionId }
 }

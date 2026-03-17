@@ -6,18 +6,12 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct PlaylistCollectionView: View {
     
-    let imageName: String
     let imageURL: URL?
     let title: String
-
-    init(imageName: String = "", imageURL: URL? = nil, title: String) {
-        self.imageName = imageName
-        self.imageURL = imageURL
-        self.title = title
-    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -45,44 +39,18 @@ struct PlaylistCollectionView: View {
 
 extension PlaylistCollectionView {
 
-    @ViewBuilder
     private func albumImage(size: CGFloat) -> some View {
-        if let url = imageURL {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                case .failure:
-                    Image(systemName: "music.note")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .padding(8)
-                        .foregroundColor(.white)
-                case .empty:
-                    ProgressView()
-                @unknown default:
-                    EmptyView()
-                }
-            }
+        KFImage(imageURL)
+            .resizable()
+            .aspectRatio(contentMode: .fill)
             .frame(width: size, height: size)
             .clipped()
             .cornerRadius(2)
             .background(.black)
-        } else {
-            Image(imageName)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: size, height: size)
-                .clipped()
-                .cornerRadius(2)
-                .background(.black)
-        }
     }
 }
 
 #Preview(traits: .sizeThatFitsLayout) {
-    PlaylistCollectionView(imageName: DeveloperPreview.instance.playLists.first!.imageName, title: DeveloperPreview.instance.playLists.first!.title)
+    PlaylistCollectionView(imageURL: URL(string: "about:blank"), title: DeveloperPreview.instance.playLists.first!.title)
         .frame(width: UIScreen.main.bounds.width, height: 120)
 }

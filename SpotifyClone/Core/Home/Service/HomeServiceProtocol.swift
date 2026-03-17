@@ -8,5 +8,6 @@
 import Foundation
 
 protocol HomeServiceProtocol {
-    func fetchAlbums(artistName: String, count: Int) async throws -> [ItunesAlbum]
+    func fetchAlbums(artistName: String, count: Int) async throws -> [ItunesAlbum]?
+    func fetchMusicVideos(artistName: String, count: Int) async throws -> [ItunesMusicVideo]?
 }

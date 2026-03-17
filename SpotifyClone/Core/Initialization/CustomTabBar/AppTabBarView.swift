@@ -59,17 +59,17 @@ extension AppTabBarView {
     }
     
     private var searchTab: some View {
-        Color.black.ignoresSafeArea()
+        placeholderView
             .tabBarItem(tab: .search, selection: $tabSelection)
     }
     
     private var libraryTab: some View {
-        Color.black.ignoresSafeArea()
+        placeholderView
             .tabBarItem(tab: .library, selection: $tabSelection)
     }
     
     private var createTab: some View {
-        Color.black.ignoresSafeArea()
+        placeholderView
             .tabBarItem(tab: .create, selection: $tabSelection)
     }
             
@@ -96,5 +96,14 @@ extension AppTabBarView {
         default:
             break
         }
+    }
+    
+    private var placeholderView: some View {
+        Color.black.ignoresSafeArea()
+            .overlay {
+                Text("🛠️ work in progress...")
+                    .font(.system(size: 16))
+                    .foregroundStyle(.white)
+            }
     }
 }

@@ -32,6 +32,7 @@ struct HomeView: View {
         .background(Color.theme.background)
         .onAppear {
             homeVM.fetchAlbums(artistName: "Mariah Carey", count: 8)
+            homeVM.fetchMusicVideos(artistName: "Mariah Carey")
         }
         .onTabAppear(tab: .home) {
             homeVM.fetchAlbums(artistName: "Mariah Carey", count: 8)
@@ -85,16 +86,13 @@ extension HomeView {
         }
     }
     
-    private func playlistsView(_ playlist: [PlaylistItem]) -> some View {
+    private func playlistsView(_ playlist: [ItunesAlbum]) -> some View {
         PlaylistCollectionSectionView(playlists: playlist)
             .frame(height: screenHeight * (257/874))
     }
     
-    private func newMusicView(_ item: NewMusicItem) -> some View {
-        NewMusicView(artistImage: item.artistImage ?? "",
-                     newMusic: item,
-                     videoImage: item.videoImage ?? "")
-            .frame(height: screenHeight * 0.3)
+    private func newMusicView(_ item: ItunesMusicVideo) -> some View {
+        NewMusicView(item: item)
             .padding(.horizontal, .design.padding16)
     }
     

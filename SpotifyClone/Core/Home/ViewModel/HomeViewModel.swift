@@ -12,8 +12,8 @@ class HomeViewModel: ObservableObject {
     
     @Published var user: User?
     @Published var songs: [MusicItem]?
-    @Published var playlists: [PlaylistItem]?
-    @Published var newMusic: NewMusicItem?
+    @Published var playlists: [ItunesAlbum]?
+    @Published var newMusic: ItunesMusicVideo?
     @Published var homeSections: [HomeSection]?
 
     private let service: HomeServiceProtocol
@@ -26,23 +26,25 @@ class HomeViewModel: ObservableObject {
     func fetchAlbums(artistName: String, count: Int) {
         Task { @MainActor in
             do {
-                let albums = try await service.fetchAlbums(artistName: artistName, count: count)
-                self.playlists = albums.map { Self.mapToPlaylistItem($0) }
+                let albums = try await service.fetchAlbums(artistName: artistName, count: count) ?? []
+                self.playlists = albums
             } catch {
                 print("fetchAlbums error: \(error)")
             }
         }
     }
-
-    static func mapToPlaylistItem(_ album: ItunesAlbum) -> PlaylistItem {
-        let hiResURLString = album.artworkUrl100.replacingOccurrences(of: "100x100", with: "600x600")
-        let imageURL = URL(string: hiResURLString)
-        return PlaylistItem(
-            id: String(album.collectionId),
-            imageURL: imageURL,
-            title: album.collectionName,
-            artists: [album.artistName],
-            durationSum: ""
-        )
+    
+    func fetchMusicVideos(artistName: String) {
+        Task { @MainActor in
+            do {
+                let newMusic = try await service.fetchMusicVideos(artistName: artistName, count: 1)
+                if let firstNewMusic = newMusic?.first {
+                    self.newMusic = firstNewMusic
+                }
+                
+            } catch {
+                print("fetchAlbums error: \(error)")
+            }
+        }
     }
 }

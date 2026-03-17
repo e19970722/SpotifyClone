@@ -5,25 +5,25 @@
 //  Created by Yen Lin on 2025/8/3.
 //
 
+import AVFoundation
 import SwiftUI
+import Kingfisher
 
 struct NewVideoView: View {
     
-    var videoImage: String
+    let thumbnailURL: URL?
+    let videoURL: URL?
     
     var body: some View {
         ZStack {
-            Image(videoImage)
+            KFImage(thumbnailURL)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .clipped()
+            
             videoView
-                .padding(.all, 16)
-
         }
-        .frame(maxWidth: .infinity,
-               maxHeight: .infinity,
-               alignment: .topLeading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .foregroundColor(.white)
         .background(Color.theme.newMusicVideoView)
         .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -31,18 +31,26 @@ struct NewVideoView: View {
 }
 
 #Preview(traits: .sizeThatFitsLayout) {
-    NewVideoView(videoImage: DeveloperPreview.instance.newMusic.videoImage ?? "NewMusicVideo")
+    NewVideoView(thumbnailURL: URL(string: ""), videoURL: URL(string: ""))
         .frame(height: 300)
 }
 
 extension NewVideoView {
     
     private var videoView: some View {
+        CustomVideoPlayer(videoURL: videoURL)
+            .overlay {
+                controlView
+            }
+    }
+    
+    private var controlView: some View {
         VStack {
             upperView
             Spacer()
             lowerView
         }
+        .padding(.all, 16)
     }
     
     private var upperView: some View {

@@ -28,8 +28,6 @@ class DeveloperPreview {
         var vm = HomeViewModel()
         vm.user = self.user
         vm.songs = self.songs
-        vm.playlists = self.playLists
-        vm.newMusic = self.newMusic
         vm.homeSections = self.homeSections
         return vm
     }()

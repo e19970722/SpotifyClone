@@ -10,7 +10,7 @@ import SwiftUI
 /// 4x2
 struct PlaylistCollectionSectionView: View {
     
-    var playlists: [PlaylistItem]
+    let playlists: [ItunesAlbum]
     
     var body: some View {
         GeometryReader { geo in
@@ -23,20 +23,17 @@ struct PlaylistCollectionSectionView: View {
                 GridItem(.flexible(), spacing: 0)
             ]
             // spacing 控制上下
-            return LazyVGrid(columns: twoColums, spacing: 8) {
+            LazyVGrid(columns: twoColums, spacing: 8) {
                 ForEach(playlists) { playlist in
-                    PlaylistCollectionView(imageName: playlist.imageName,
-                                           imageURL: playlist.imageURL,
-                                           title: playlist.title)
-                    .frame(height: singleHeight)
+                    if let artworkUrlStr = playlist.artworkUrl100,
+                       let artworkUrl = URL(string: artworkUrlStr),
+                       let title = playlist.collectionName {
+                        PlaylistCollectionView(imageURL: artworkUrl,
+                                               title: title)
+                        .frame(height: singleHeight)
+                    }
                 }
             }
         }
     }
-}
-
-#Preview(traits: .sizeThatFitsLayout) {
-    let collectionViewHeight = UIScreen.main.bounds.size.height * (257/874)
-    PlaylistCollectionSectionView(playlists: DeveloperPreview.instance.playLists)
-        .frame(height: collectionViewHeight)
 }
