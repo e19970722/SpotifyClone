@@ -15,6 +15,12 @@ final class UserManager: ObservableObject {
     @Published var isLoggedIn: Bool = false
     
     private init() {
-        
+        isLoggedIn = KeychainManager.shared.read(forKey: .accessToken) != nil
+    }
+
+    func logout() {
+        try? KeychainManager.shared.delete(forKey: .accessToken)
+        try? KeychainManager.shared.delete(forKey: .refreshToken)
+        isLoggedIn = false
     }
 }

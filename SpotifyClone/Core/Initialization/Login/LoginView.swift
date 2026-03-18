@@ -28,7 +28,7 @@ extension LoginView {
         Button {
             Task {
                 if let accessToken = try? await OAuthManager.instance.loginWithSpotify() {
-                    SpotifyUserDefaults.shared.accessToken = accessToken
+                    try? KeychainManager.shared.save(accessToken, forKey: .accessToken)
                     userManager.isLoggedIn = true
                 }
             }
