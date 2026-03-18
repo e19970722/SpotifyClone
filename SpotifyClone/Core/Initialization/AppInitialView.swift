@@ -9,14 +9,22 @@ import SwiftUI
 
 struct AppInitialView: View {
     
-    var isLoggedIn: Bool = true
+    @StateObject private var userManager: UserManager
     
+    init() {
+        _userManager = StateObject(wrappedValue: UserManager.instance)
+    }
+        
 	var body: some View {
         Group {
-            if isLoggedIn {
+            if userManager.isLoggedIn {
                 AppTabBarView()
+                
+            } else {
+                LoginView()
             }
         }
+        .environmentObject(userManager)
 	}
 }
 
