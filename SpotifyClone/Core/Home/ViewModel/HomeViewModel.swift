@@ -10,7 +10,7 @@ import Combine
 
 class HomeViewModel: ObservableObject {
     
-    @Published var user: User?
+    @Published var user: SpotifyUser?
     @Published var songs: [MusicItem]?
     @Published var playlists: [ItunesAlbum]?
     @Published var newMusic: ItunesMusicVideo?
