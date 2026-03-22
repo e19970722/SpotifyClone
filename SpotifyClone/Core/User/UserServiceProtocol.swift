@@ -9,4 +9,5 @@ import Foundation
 
 protocol UserServiceProtocol {
     func fetchCurrentUser() async throws -> SpotifyUser
+    func fetchUserPlaylists(limit: Int, offset: Int) async throws -> SpotifyUserPlaylistResponse
 }

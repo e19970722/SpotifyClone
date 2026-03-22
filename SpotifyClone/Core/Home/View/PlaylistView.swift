@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct PlaylistView: View {
     
@@ -23,7 +24,7 @@ struct PlaylistView: View {
                 searchView
                     .frame(height: geo.size.height * 0.05)
                 
-                Image(playlist.imageName)
+                KFImage(playlist.imageURL)
                     .resizable()
                     .frame(width: geo.size.width * 5/8,
                            height: geo.size.width * 5/8)
@@ -37,10 +38,11 @@ struct PlaylistView: View {
 }
 
 #Preview {
-    if let firstPlaylist = DeveloperPreview.instance.playLists.first {
-        PlaylistView(inputText: .constant(""), playlist: firstPlaylist)
-            .background(.black)
-    }
+    PlaylistView(inputText: .constant(""),
+                 playlist: PlaylistItem(id: "",
+                                        title: "Playlist Name",
+                                        imageURL: URL(string: "")))
+        .background(.black)
 }
 
 extension PlaylistView {
@@ -99,9 +101,11 @@ extension PlaylistView {
                 Spacer()
             }
             
-            Text(self.playlist.durationSum)
-                .foregroundColor(.greyColor1)
-                .font(.system(size: 14, weight: .semibold))
+            if let durationStr = self.playlist.durationSum {
+                Text(durationStr)
+                    .foregroundColor(.greyColor1)
+                    .font(.system(size: 14, weight: .semibold))
+            }
         }
     }
     

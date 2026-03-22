@@ -76,17 +76,6 @@ class DeveloperPreview {
                   duration: 29)
     ]
     
-    lazy var playLists = [
-        PlaylistItem(imageName: "Collections", title: "Collections", artists: [self.artist, "Taylor Swift", "Demi Lovato"], durationSum: "2h 50m"),
-        PlaylistItem(imageName: "Collections", title: "Collections", durationSum: "2h 50m"),
-        PlaylistItem(imageName: "Collections", title: "Collections", durationSum: "2h 50m"),
-        PlaylistItem(imageName: "Collections", title: "Collections", durationSum: "2h 50m"),
-        PlaylistItem(imageName: "Collections", title: "Collections", durationSum: "2h 50m"),
-        PlaylistItem(imageName: "Collections", title: "Collections", durationSum: "2h 50m"),
-        PlaylistItem(imageName: "Collections", title: "Collections", durationSum: "2h 50m"),
-        PlaylistItem(imageName: "Collections", title: "Collections", durationSum: "2h 50m")
-    ]
-    
     lazy var newMusic = NewMusicItem(artist: self.artist,
                                      song: "We Belong Together (Mimi's Late Night Valentine's Mix)",
                                      artistImage: "Artist", videoImage: "NewMusicVideo")

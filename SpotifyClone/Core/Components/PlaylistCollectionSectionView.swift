@@ -10,7 +10,7 @@ import SwiftUI
 /// 4x2
 struct PlaylistCollectionSectionView: View {
     
-    let playlists: [ItunesAlbum]
+    let playlists: [PlaylistItem]
     
     var body: some View {
         GeometryReader { geo in
@@ -25,10 +25,8 @@ struct PlaylistCollectionSectionView: View {
             // spacing 控制上下
             LazyVGrid(columns: twoColums, spacing: 8) {
                 ForEach(playlists) { playlist in
-                    if let artworkUrlStr = playlist.artworkUrl100,
-                       let artworkUrl = URL(string: artworkUrlStr),
-                       let title = playlist.collectionName {
-                        PlaylistCollectionView(imageURL: artworkUrl,
+                    if let title = playlist.title {
+                        PlaylistCollectionView(imageURL: playlist.imageURL,
                                                title: title)
                         .frame(height: singleHeight)
                     }

@@ -72,10 +72,8 @@ extension HomeView {
     
     private var mainListView: some View {
         VStack(spacing: 24) {
-            if let playlist = homeVM.playlists {
+            if let playlist = userManager.playlists {
                 PlaylistCollectionSectionView(playlists: playlist)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets())
                     .frame(height: screenHeight * (257/874))
                     .padding(.horizontal, .design.padding16)
             }
@@ -88,11 +86,6 @@ extension HomeView {
                 homeSectionsView(homeSections)
             }
         }
-    }
-    
-    private func playlistsView(_ playlist: [ItunesAlbum]) -> some View {
-        PlaylistCollectionSectionView(playlists: playlist)
-            .frame(height: screenHeight * (257/874))
     }
     
     private func newMusicView(_ item: ItunesMusicVideo) -> some View {
