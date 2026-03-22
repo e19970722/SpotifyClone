@@ -26,7 +26,6 @@ class DeveloperPreview {
     
     lazy var vm: HomeViewModel = {
         var vm = HomeViewModel()
-        vm.user = self.user
         vm.songs = self.songs
         vm.homeSections = self.homeSections
         return vm

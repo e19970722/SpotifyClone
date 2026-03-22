@@ -6,8 +6,11 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct HomeView: View {
+    @EnvironmentObject private var userManager: UserManager
+    
     @StateObject private var homeVM: HomeViewModel
     
     @State private var selectedSegment: HomeSegmentType = .all
@@ -42,13 +45,14 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
+        .environmentObject(UserManager.instance)
 }
 
 extension HomeView {
     
     private var mainInfoView: some View {
         HStack(alignment: .center, spacing: 8) {
-            Image(.profile)
+            KFImage(userManager.userImageURL())
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 36, height: 36)
