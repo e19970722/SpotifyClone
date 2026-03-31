@@ -11,6 +11,7 @@ import SwiftUI
 struct PlaylistCollectionSectionView: View {
     
     let playlists: [PlaylistItem]
+    let onTap: (PlaylistItem) -> Void
     
     var body: some View {
         GeometryReader { geo in
@@ -29,6 +30,9 @@ struct PlaylistCollectionSectionView: View {
                         PlaylistCollectionView(imageURL: playlist.imageURL,
                                                title: title)
                         .frame(height: singleHeight)
+                        .onTapGesture {
+                            onTap(playlist)
+                        }
                     }
                 }
             }

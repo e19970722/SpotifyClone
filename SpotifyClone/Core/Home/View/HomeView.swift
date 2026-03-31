@@ -13,6 +13,7 @@ struct HomeView: View {
     
     @StateObject private var homeVM: HomeViewModel
     
+    @State private var path = NavigationPath()
     @State private var selectedSegment: HomeSegmentType = .all
     
     private var screenHeight: CGFloat {
@@ -24,21 +25,26 @@ struct HomeView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            mainInfoView
-            
-            ScrollView(.vertical, showsIndicators: false) {
-                mainListView
+        NavigationStack(path: $path) {
+            VStack(alignment: .leading, spacing: 16) {
+                mainInfoView
+                
+                ScrollView(.vertical, showsIndicators: false) {
+                    mainListView
+                }
             }
-        }
-        .clipShape(Rectangle())
-        .background(Color.theme.background)
-        .onAppear {
-            homeVM.fetchAlbums(artistName: "Mariah Carey", count: 8)
-            homeVM.fetchMusicVideos(artistName: "Mariah Carey")
-        }
-        .onTabAppear(tab: .home) {
-            homeVM.fetchAlbums(artistName: "Mariah Carey", count: 8)
+            .background(Color.theme.background)
+            .onAppear {
+//                homeVM.fetchAlbums(artistName: "Mariah Carey", count: 8)
+//                homeVM.fetchMusicVideos(artistName: "Mariah Carey")
+            }
+            .onTabAppear(tab: .home) {
+//                homeVM.fetchAlbums(artistName: "Mariah Carey", count: 8)
+            }
+            .navigationDestination(
+                for: HomePath.self,
+                destination: decideNavigationForHomePath
+            )
         }
     }
 }
@@ -47,6 +53,20 @@ struct HomeView: View {
     HomeView()
         .environmentObject(UserManager.instance)
 }
+
+// MARK: - Navigation Path
+
+extension HomeView {
+    @ViewBuilder
+    private func decideNavigationForHomePath(_ route: HomePath) -> some View {
+        switch route {
+        case .detailView(let id):
+            AlbumDetailView(albumID: id)
+        }
+    }
+}
+
+// MARK: - Extension
 
 extension HomeView {
     
@@ -73,14 +93,19 @@ extension HomeView {
     private var mainListView: some View {
         VStack(spacing: 24) {
             if let playlist = userManager.playlists {
-                PlaylistCollectionSectionView(playlists: playlist)
-                    .frame(height: screenHeight * (257/874))
-                    .padding(.horizontal, .design.padding16)
+                PlaylistCollectionSectionView(playlists: playlist,
+                                              onTap: { item in
+                    if let id = item.id {
+                        path.append(HomePath.detailView(id: id))
+                    }
+                })
+                .frame(height: screenHeight * (257/874))
+                .padding(.horizontal, .design.padding16)
             }
             
-            if let newMusicItem = homeVM.newMusic {
-                newMusicView(newMusicItem)
-            }
+//            if let newMusicItem = homeVM.newMusic {
+//                newMusicView(newMusicItem)
+//            }
             
             if let homeSections = homeVM.homeSections {
                 homeSectionsView(homeSections)

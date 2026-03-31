@@ -8,28 +8,20 @@
 import SwiftUI
 import Kingfisher
 
-struct AlbumItem {
-    let title: String?
-    let imageURL: URL?
-    let artists: [String]?
-    let description: String?
-    let duration: String?
-    let madeFor: String?
-    let tags: [String]?
-    let tracks: [TrackItem]?
-}
-
-struct TrackItem: Identifiable {
-    let id: String
-    let title: String
-    let artists: String?
-    let imageURL: URL?
-    let hasVideo: Bool
-}
-
 struct AlbumDetailView: View {
+    
+    @StateObject private var albumVM: AlbumViewModel
 
-    let album: AlbumItem
+    let albumID: String
+    
+    private var album: AlbumItem {
+        return albumVM.albumItem
+    }
+    
+    init(albumID: String) {
+        self.albumID = albumID
+        _albumVM = StateObject(wrappedValue: AlbumViewModel())
+    }
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -49,19 +41,7 @@ struct AlbumDetailView: View {
 }
 
 #Preview {
-    AlbumDetailView(album: AlbumItem(
-        title: "R&B Mix",
-        imageURL: URL(string: "https://i.scdn.co/image/ab67616d0000b2734d568ce955d950820f101a25")!,
-        artists: ["Mariah Carey", "Sheer Element", "thủy", "Whitney"],
-        description: "recommendations and the impact of promotion",
-        duration: "3h 6m",
-        madeFor: "Yen Lin",
-        tags: ["More discovery", "Pop R&B", "Quiet Storm", "Chinese R&B"],
-        tracks: [
-            TrackItem(id: "1", title: "The Roof (Back In Time)", artists: "Mariah Carey", imageURL: nil, hasVideo: true),
-            TrackItem(id: "2", title: "I Wanna Know", artists: "Sheer Element", imageURL: nil, hasVideo: false)
-        ]
-    ))
+    AlbumDetailView(albumID: "")
 }
 
 // MARK: - Sub-views
