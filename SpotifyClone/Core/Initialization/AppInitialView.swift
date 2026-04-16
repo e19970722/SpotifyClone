@@ -17,9 +17,12 @@ struct AppInitialView: View {
         
 	var body: some View {
         Group {
-            if userManager.isLoggedIn {
+            if userManager.isRefreshingToken {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black)
+            } else if userManager.isLoggedIn {
                 AppTabBarView()
-                
             } else {
                 LoginView()
             }

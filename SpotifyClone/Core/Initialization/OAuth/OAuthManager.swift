@@ -11,7 +11,7 @@ import CryptoKit
 
 // MARK: - Token Response Model
 
-private struct SpotifyTokenResponse: Decodable {
+struct SpotifyTokenResponse: Decodable {
     let accessToken: String
     let tokenType: String
     let expiresIn: Int
@@ -43,7 +43,7 @@ class OAuthManager: NSObject {
 
     // MARK: - Spotify Config
 
-    private let clientID    = "70cf3e0b631148cc95f004f8f7b62b1d"           // 填入 Spotify Dashboard 的 Client ID
+    private let clientID    = "70cf3e0b631148cc95f004f8f7b62b1d"
     private let redirectURI = "spotifyclone://callback"
     private let scopes      = "user-read-private user-library-read user-read-email playlist-read-private playlist-read-collaborative"
 
@@ -62,8 +62,8 @@ class OAuthManager: NSObject {
 
     // MARK: - Public Methods
 
-    /// 發起 Spotify 登入，成功後回傳 access_token
-    func loginWithSpotify() async throws -> String {
+    /// 發起 Spotify 登入，成功後回傳完整 token 資訊
+    func loginWithSpotify() async throws -> SpotifyTokenResponse {
         codeVerifier = generateCodeVerifier()
         let codeChallenge = generateCodeChallenge(from: codeVerifier)
 
@@ -72,8 +72,36 @@ class OAuthManager: NSObject {
         }
 
         let code = try await openAuthSession(url: authURL)
-        let accessToken = try await exchangeCodeForToken(code)
-        return accessToken
+        return try await exchangeCodeForToken(code)
+    }
+
+    /// 用 refresh token 取得新的 access token
+    func refreshAccessToken(refreshToken: String) async throws -> SpotifyTokenResponse {
+        guard let url = URL(string: "https://accounts.spotify.com/api/token") else {
+            throw OAuthError.invalidURL
+        }
+
+        let body = [
+            "grant_type":    "refresh_token",
+            "refresh_token": refreshToken,
+            "client_id":     clientID
+        ]
+        .map { "\($0.key)=\($0.value)" }
+        .joined(separator: "&")
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.httpBody = body.data(using: .utf8)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200..<300).contains(httpResponse.statusCode) else {
+            throw OAuthError.tokenExchangeFailed
+        }
+
+        return try JSONDecoder().decode(SpotifyTokenResponse.self, from: data)
     }
 
     // MARK: - Private Methods
@@ -129,7 +157,7 @@ class OAuthManager: NSObject {
         }
     }
 
-    private func exchangeCodeForToken(_ code: String) async throws -> String {
+    private func exchangeCodeForToken(_ code: String) async throws -> SpotifyTokenResponse {
         guard let url = URL(string: "https://accounts.spotify.com/api/token") else {
             throw OAuthError.invalidURL
         }
@@ -156,8 +184,7 @@ class OAuthManager: NSObject {
             throw OAuthError.tokenExchangeFailed
         }
 
-        let tokenResponse = try JSONDecoder().decode(SpotifyTokenResponse.self, from: data)
-        return tokenResponse.accessToken
+        return try JSONDecoder().decode(SpotifyTokenResponse.self, from: data)
     }
 
     // MARK: - PKCE Helpers

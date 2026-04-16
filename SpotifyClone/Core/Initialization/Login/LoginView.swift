@@ -31,8 +31,12 @@ extension LoginView {
             if !isPresentOAuth {
                 isPresentOAuth = true
                 Task {
-                    if let accessToken = try? await OAuthManager.instance.loginWithSpotify() {
-                        try? KeychainManager.shared.save(accessToken, forKey: .accessToken)
+                    if let result = try? await OAuthManager.instance.loginWithSpotify() {
+                        userManager.saveSession(
+                            accessToken: result.accessToken,
+                            refreshToken: result.refreshToken,
+                            expiresIn: result.expiresIn
+                        )
                         userManager.isLoggedIn = true
                     }
                     isPresentOAuth = false

@@ -81,6 +81,8 @@ extension SpotifyUserDefaults {
         case loginMode = "loginMode"
         /// 當前貼文內容 HTML
         case currentPostHTML = "currentPostHTML"
+        /// Token 到期的絕對時間（Unix timestamp，Double）
+        case tokenExpiryDate = "token_expiry_date"
     }
     
     /// 是否存在範例？
@@ -117,6 +119,15 @@ extension SpotifyUserDefaults {
     var currentPostHTML: String? {
         get { SpotifyUserDefaults.shared.string(forSpotify: .currentPostHTML) }
         set { SpotifyUserDefaults.shared.setValue(newValue, forSpotify: .currentPostHTML) }
+    }
+
+    /// Token 到期的絕對時間（Unix timestamp，nil 代表未設定）
+    var tokenExpiryDate: Double? {
+        get {
+            let val = SpotifyUserDefaults.shared.Spotify?.double(forKey: SpotifyKey.tokenExpiryDate.rawValue) ?? 0
+            return val == 0 ? nil : val
+        }
+        set { SpotifyUserDefaults.shared.setValue(newValue, forSpotify: .tokenExpiryDate) }
     }
     
     /// 清除所有UserDefaults內容
