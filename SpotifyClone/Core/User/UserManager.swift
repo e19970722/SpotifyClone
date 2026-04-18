@@ -18,6 +18,7 @@ final class UserManager: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var playlists: [PlaylistItem]? = nil
     @Published var savedAlbums: [SpotifyUserSavedAlbum]? = nil
+    @Published var recentlyPlayed: [SpotifyRecentlyPlayedItem]? = nil
     @Published var isRefreshingToken: Bool = false
 
     // MARK: - Private

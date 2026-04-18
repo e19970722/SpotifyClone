@@ -12,6 +12,7 @@ extension CGFloat {
 }
 
 struct Design {
+    let padding8 = 8.0
     let padding16 = 16.0
     
 }

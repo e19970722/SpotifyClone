@@ -77,7 +77,7 @@ extension HomeView {
 extension HomeView {
     
     private var mainInfoView: some View {
-        HStack(alignment: .center, spacing: 8) {
+        HStack(alignment: .center, spacing: .design.padding8) {
             KFImage(userManager.userImageURL())
                 .resizable()
                 .aspectRatio(contentMode: .fit)
@@ -118,9 +118,16 @@ extension HomeView {
             }
             
             if let albums = userManager.savedAlbums {
-                VStack(spacing: 8) {
-                    titleView(" Your Saved Albums")
+                VStack(spacing: .design.padding8) {
+                    titleView("Your Saved Albums")
                     savedAlbums(albums)
+                }
+            }
+
+            if let items = userManager.recentlyPlayed {
+                VStack(spacing: .design.padding8) {
+                    titleView("Recently Played")
+                    recentAlbums(items)
                 }
             }
         }
@@ -148,7 +155,7 @@ extension HomeView {
      }
     
     private func horizontalListView(itemWidth: CGFloat, imageURL: URL?, title: String?) -> some View {
-        VStack(spacing: 8) {
+        VStack(spacing: .design.padding8) {
             KFImage(imageURL)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
@@ -172,6 +179,22 @@ extension HomeView {
                         horizontalListView(itemWidth: width,
                                            imageURL: URL(string: albumURLStr),
                                            title: album.name)
+                    }
+                }
+            }
+            .padding(.horizontal, .design.padding16)
+        }
+    }
+    
+    private func recentAlbums(_ items: [SpotifyRecentlyPlayedItem]) -> some View {
+        let width = (screenWidth - .design.padding16 * 3) / 2.5
+        return ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(spacing: .design.padding16) {
+                ForEach(items) { item in
+                    if let albumURLStr = item.track?.album?.images?.first?.url {
+                        horizontalListView(itemWidth: width,
+                                           imageURL: URL(string: albumURLStr),
+                                           title: item.track?.album?.name)
                     }
                 }
             }

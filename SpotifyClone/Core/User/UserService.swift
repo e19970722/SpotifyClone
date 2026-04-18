@@ -49,4 +49,16 @@ final class UserService: UserServiceProtocol {
         )
         return try await network.request(endpoint)
     }
+
+    func fetchRecentlyPlayed(limit: Int) async throws -> SpotifyRecentlyPlayedResponse {
+        let endpoint = Endpoint(
+            baseURL: SpotifyAPI.baseURL,
+            path: "me/player/recently-played",
+            headers: SpotifyAPI.authHeader,
+            queryItems: [
+                URLQueryItem(name: "limit", value: "\(limit)")
+            ]
+        )
+        return try await network.request(endpoint)
+    }
 }

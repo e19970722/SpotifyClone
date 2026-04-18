@@ -45,7 +45,7 @@ class OAuthManager: NSObject, TokenRefreshProtocol {
 
     private let clientID    = "70cf3e0b631148cc95f004f8f7b62b1d"
     private let redirectURI = "spotifyclone://callback"
-    private let scopes      = "user-read-private user-library-read user-read-email playlist-read-private playlist-read-collaborative"
+    private let scopes      = "user-read-private user-library-read user-read-email playlist-read-private playlist-read-collaborative user-read-recently-played"
 
     // MARK: - Internal Properties
 
