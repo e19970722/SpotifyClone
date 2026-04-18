@@ -16,20 +16,24 @@ struct HomeView: View {
     @State private var path = NavigationPath()
     @State private var selectedSegment: HomeSegmentType = .all
     
+    private var screenWidth: CGFloat {
+        return UIScreen.main.bounds.width
+    }
+    
     private var screenHeight: CGFloat {
         return UIScreen.main.bounds.height
     }
-    
+        
     init() {
         _homeVM = StateObject(wrappedValue: HomeViewModel())
     }
     
     var body: some View {
         NavigationStack(path: $path) {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: .design.padding16) {
                 mainInfoView
                 
-                ScrollView(.vertical, showsIndicators: false) {
+                ScrollView(.vertical) {
                     mainListView
                 }
             }
@@ -112,7 +116,23 @@ extension HomeView {
             if let homeSections = homeVM.homeSections {
                 homeSectionsView(homeSections)
             }
+            
+            if let albums = userManager.savedAlbums {
+                VStack(spacing: 8) {
+                    titleView(" Your Saved Albums")
+                    savedAlbums(albums)
+                }
+            }
         }
+    }
+    
+    private func titleView(_ title: String) -> some View {
+        Text(title)
+            .font(.system(size: 24, weight: .bold))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .foregroundStyle(.white)
+            .lineLimit(1)
+            .padding(.horizontal, .design.padding16)
     }
     
     private func newMusicView(_ item: ItunesMusicVideo) -> some View {
@@ -126,4 +146,36 @@ extension HomeView {
                  .frame(height: screenHeight * section.heightPortion)
          }
      }
+    
+    private func horizontalListView(itemWidth: CGFloat, imageURL: URL?, title: String?) -> some View {
+        VStack(spacing: 8) {
+            KFImage(imageURL)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: itemWidth, height: itemWidth)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+            
+            Text(title ?? "")
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(.gray.opacity(0.6))
+                .lineLimit(1)
+                .frame(width: itemWidth, alignment: .topLeading)
+        }
+    }
+    
+    private func savedAlbums(_ albums: [SpotifyUserSavedAlbum]) -> some View {
+        let width = (screenWidth - .design.padding16 * 3) / 2.5
+        return ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(spacing: .design.padding16) {
+                ForEach(albums) { album in
+                    if let albumURLStr = album.images?.first?.url {
+                        horizontalListView(itemWidth: width,
+                                           imageURL: URL(string: albumURLStr),
+                                           title: album.name)
+                    }
+                }
+            }
+            .padding(.horizontal, .design.padding16)
+        }
+    }
 }
