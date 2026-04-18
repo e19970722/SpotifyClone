@@ -10,6 +10,7 @@ import Kingfisher
 
 struct HomeView: View {
     @EnvironmentObject private var userManager: UserManager
+    @Environment(\.tabBarHeight) private var tabBarHeight
     
     @StateObject private var homeVM: HomeViewModel
     
@@ -37,6 +38,7 @@ struct HomeView: View {
                     mainListView
                 }
             }
+            .padding(.bottom, tabBarHeight)
             .background(Color.theme.background)
             .onAppear {
 //                homeVM.fetchAlbums(artistName: "Mariah Carey", count: 8)
@@ -66,6 +68,7 @@ extension HomeView {
         switch route {
         case .detailView(let id):
             AlbumDetailView(albumID: id)
+            
         case .playlistView(let id):
             AlbumDetailView(playlistID: id)
         }
@@ -131,6 +134,7 @@ extension HomeView {
                 }
             }
         }
+        .padding(.bottom, .design.padding16)
     }
     
     private func titleView(_ title: String) -> some View {

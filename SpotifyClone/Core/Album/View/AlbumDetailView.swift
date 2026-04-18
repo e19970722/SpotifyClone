@@ -9,6 +9,7 @@ import SwiftUI
 import Kingfisher
 
 struct AlbumDetailView: View {
+    @Environment(\.tabBarHeight) private var tabBarHeight
 
     @StateObject private var albumVM: AlbumViewModel
 
@@ -41,6 +42,7 @@ struct AlbumDetailView: View {
                 trackListView
             }
         }
+        .padding(.bottom, tabBarHeight)
         .background(
             LinearBackgroundView(mainColor: .purple)
                 .ignoresSafeArea()
