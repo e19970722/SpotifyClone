@@ -21,4 +21,5 @@ enum HomeSegmentType: Hashable, CaseIterable {
 
 enum HomePath: Hashable {
     case detailView(id: String)
+    case playlistView(id: String)
 }

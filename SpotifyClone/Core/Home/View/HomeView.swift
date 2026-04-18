@@ -62,6 +62,8 @@ extension HomeView {
         switch route {
         case .detailView(let id):
             AlbumDetailView(albumID: id)
+        case .playlistView(let id):
+            AlbumDetailView(playlistID: id)
         }
     }
 }
@@ -92,16 +94,16 @@ extension HomeView {
     
     private var mainListView: some View {
         VStack(spacing: 24) {
-//            if let playlist = userManager.playlists {
-//                PlaylistCollectionSectionView(playlists: playlist,
-//                                              onTap: { item in
-//                    if let id = item.id {
-//                        path.append(HomePath.detailView(id: id))
-//                    }
-//                })
-//                .frame(height: screenHeight * (257/874))
-//                .padding(.horizontal, .design.padding16)
-//            }
+            if let playlist = userManager.playlists {
+                PlaylistCollectionSectionView(playlists: playlist,
+                                              onTap: { item in
+                    if let id = item.id {
+                        path.append(HomePath.playlistView(id: id))
+                    }
+                })
+                .frame(height: screenHeight * (257/874))
+                .padding(.horizontal, .design.padding16)
+            }
             
 //            if let newMusicItem = homeVM.newMusic {
 //                newMusicView(newMusicItem)

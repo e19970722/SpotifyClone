@@ -9,17 +9,25 @@ import SwiftUI
 import Kingfisher
 
 struct AlbumDetailView: View {
-    
+
     @StateObject private var albumVM: AlbumViewModel
 
     let albumID: String
-    
+    private let isPlaylist: Bool
+
     private var album: AlbumItem {
         return albumVM.albumItem
     }
-    
+
     init(albumID: String) {
         self.albumID = albumID
+        self.isPlaylist = false
+        _albumVM = StateObject(wrappedValue: AlbumViewModel())
+    }
+
+    init(playlistID: String) {
+        self.albumID = playlistID
+        self.isPlaylist = true
         _albumVM = StateObject(wrappedValue: AlbumViewModel())
     }
 
@@ -37,6 +45,11 @@ struct AlbumDetailView: View {
             LinearBackgroundView(mainColor: .purple)
                 .ignoresSafeArea()
         )
+        .onAppear {
+            if isPlaylist {
+                albumVM.fetchPlaylist(id: albumID)
+            }
+        }
     }
 }
 
