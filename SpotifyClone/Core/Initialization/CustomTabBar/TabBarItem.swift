@@ -21,7 +21,7 @@ public enum TabBarItem: Int, Hashable {
         switch self {
         case .home:                     return "Home"
         case .search:                   return "Search"
-        case .library:                  return "Library"
+        case .library:                  return "Your Library"
         case .create:                   return "Create"
         }
     }
