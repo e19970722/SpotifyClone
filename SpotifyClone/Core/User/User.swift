@@ -34,7 +34,7 @@ struct SpotifyUser: Decodable, Identifiable, Equatable {
 }
 
 struct SpotifyImage: Decodable, Equatable {
-    let url: String
+    let url: String?
     let height: Int?
     let width: Int?
 }

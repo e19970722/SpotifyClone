@@ -86,11 +86,11 @@ Extend the design system if a new token is needed.
 - Conform to `Identifiable` (always), `Codable` when API-ready
 - Use `UUID().uuidString` for default IDs
 - Use `enum` for layout/type variants (e.g. `SectionLayout`)
-- Optional properties (`String?`, `Double?`) for data not always present
+- **All properties in Decodable/Codable models must be optional** (`String?`, `Int?`, `[T]?`, etc.) — API responses may omit any field at any time
 
 ## Networking
 - `NetworkManager.swift` is the single networking entry point (currently a stub)
-- Models use `Codable` — ready for `JSONDecoder`
+- Models use `Decodable` (not `Codable`) for API response types — encoding is not needed and avoids conformance issues with nested `Decodable`-only types
 
 ## Current Refactor Goal
 Remove unnecessary `GeometryReader` usages and replace with `UIScreen.main.bounds` proportional sizing where appropriate.

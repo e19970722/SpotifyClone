@@ -21,14 +21,14 @@ struct SpotifyPlaylistDetail: Decodable {
     }
 
     func toAlbumItem() -> AlbumItem {
-        let imageURL = images?.first.flatMap { URL(string: $0.url) }
+        let imageURL = images?.first.flatMap { $0.url.flatMap { URL(string: $0) } }
         let ownerName = owner?.displayName
         let trackItems: [TrackItem]? = tracks?.items?.compactMap { wrapper -> TrackItem? in
             guard let track = wrapper.track else { return nil }
             let artists = track.artists?
                 .compactMap { $0.name }
                 .joined(separator: ", ")
-            let trackImageURL = track.album?.images?.first.flatMap { URL(string: $0.url) }
+            let trackImageURL = track.album?.images?.first.flatMap { $0.url.flatMap { URL(string: $0) } }
             return TrackItem(
                 id: track.id ?? UUID().uuidString,
                 title: track.name ?? "",
