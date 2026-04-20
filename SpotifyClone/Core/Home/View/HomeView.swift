@@ -38,7 +38,6 @@ struct HomeView: View {
                     mainListView
                 }
             }
-            .padding(.bottom, tabBarHeight)
             .background(Color.theme.background)
             .onAppear {
 //                homeVM.fetchAlbums(artistName: "Mariah Carey", count: 8)
@@ -135,6 +134,7 @@ extension HomeView {
             }
         }
         .padding(.bottom, .design.padding16)
+        .padding(.bottom, tabBarHeight)
     }
     
     private func titleView(_ title: String) -> some View {

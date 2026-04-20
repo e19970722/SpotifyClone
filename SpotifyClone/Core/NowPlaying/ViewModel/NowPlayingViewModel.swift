@@ -23,7 +23,7 @@ enum PlayingDevice: String {
 class NowPlayingViewModel: ObservableObject {
     
     // ⚠️ TODO: 傳入真實播放值
-    @Published var isPlaying: Bool = false
+    @Published var isPlaying: Bool = true
     @Published var currentSong: MusicItem = DeveloperPreview.instance.currentSong
     @Published var currentProgress: Double = 0.0
     @Published var playingPlatform: PlayingPlatform = .headphone

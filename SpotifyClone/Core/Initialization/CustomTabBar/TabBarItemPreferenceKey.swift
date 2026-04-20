@@ -42,9 +42,3 @@ extension View {
         modifier(TabBarItemViewModifier(tab: tab, selection: selection))
     }
 }
-
-extension View {
-    func updateTabBarHeight(_ height: CGFloat) -> some View {
-        preference(key: TabBarHeightPreferenceKey.self, value: height)
-    }
-}

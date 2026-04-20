@@ -7,11 +7,14 @@
 
 import SwiftUI
 
-struct AppTabBarView: View {    
+struct AppTabBarView: View {
+    @StateObject private var nowPlayingVM: NowPlayingViewModel
+     
     @State private var tabSelection: TabBarItem = .home
     @State private var oldTabSelection: TabBarItem = .home
     @State private var isTabBarVisible: Bool = true
     @State private var tabBarHeight: CGFloat = 0.0
+    @State private var showNowPlayingSheet: Bool = false
     
     // MARK: - 重複點擊 Tab 事件
     
@@ -27,6 +30,10 @@ struct AppTabBarView: View {
     @State private var openUserID: String? = nil
     @State private var openArticleID: String? = nil
     
+    init() {
+        _nowPlayingVM = StateObject(wrappedValue: NowPlayingViewModel())
+    }
+    
     // MARK: - Body
     
     var body: some View {
@@ -39,11 +46,17 @@ struct AppTabBarView: View {
                                         libraryTab
                                         createTab
                                     },
-                                  onTapSameTab: handleOnTapSameTab)
+                                  onTapSameTab: handleOnTapSameTab,
+                                  onTapNowPlaying: { showNowPlayingSheet = true })
         .environment(\.isTabBarVisible, $isTabBarVisible)
         .environment(\.tabBarHeight, tabBarHeight)
         .environment(\.tabSelection, tabSelection)
+        .environmentObject(nowPlayingVM)
         .ignoresSafeArea(.keyboard, edges: .bottom)
+        .fullScreenCover(isPresented: $showNowPlayingSheet) {
+            NowPlayingFullScreenView()
+                .environmentObject(nowPlayingVM)
+        }
     }
 }
 
