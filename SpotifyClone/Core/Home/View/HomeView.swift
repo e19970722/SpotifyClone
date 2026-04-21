@@ -100,7 +100,7 @@ extension HomeView {
     
     private var mainListView: some View {
         VStack(spacing: 24) {
-            if let playlist = userManager.playlists {
+            if let playlist = homeVM.playlists {
                 PlaylistCollectionSectionView(playlists: playlist,
                                               onTap: { item in
                     if let id = item.id {
@@ -119,14 +119,14 @@ extension HomeView {
                 homeSectionsView(homeSections)
             }
             
-            if let albums = userManager.savedAlbums {
+            if let albums = homeVM.savedAlbums {
                 VStack(spacing: .design.padding8) {
                     titleView("Your Saved Albums")
                     savedAlbums(albums)
                 }
             }
 
-            if let items = userManager.recentlyPlayed {
+            if let items = homeVM.recentlyPlayed {
                 VStack(spacing: .design.padding8) {
                     titleView("Recently Played")
                     recentAlbums(items)

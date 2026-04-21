@@ -23,42 +23,4 @@ final class UserService: UserServiceProtocol {
         )
         return try await network.request(endpoint)
     }
-    
-    func fetchUserPlaylists(limit: Int, offset: Int) async throws -> SpotifyUserPlaylistResponse {
-        let endpoint = Endpoint(
-            baseURL: SpotifyAPI.baseURL,
-            path: "me/playlists",
-            headers: SpotifyAPI.authHeader,
-            queryItems: [
-                URLQueryItem(name: "limit",  value: "\(limit)"),
-                URLQueryItem(name: "offset", value: "\(offset)")
-            ]
-        )
-        return try await network.request(endpoint)
-    }
-
-    func fetchSavedAlbums(limit: Int, offset: Int) async throws -> SpotifyUserSavedAlbumsResponse {
-        let endpoint = Endpoint(
-            baseURL: SpotifyAPI.baseURL,
-            path: "me/albums",
-            headers: SpotifyAPI.authHeader,
-            queryItems: [
-                URLQueryItem(name: "limit",  value: "\(limit)"),
-                URLQueryItem(name: "offset", value: "\(offset)")
-            ]
-        )
-        return try await network.request(endpoint)
-    }
-
-    func fetchRecentlyPlayed(limit: Int) async throws -> SpotifyRecentlyPlayedResponse {
-        let endpoint = Endpoint(
-            baseURL: SpotifyAPI.baseURL,
-            path: "me/player/recently-played",
-            headers: SpotifyAPI.authHeader,
-            queryItems: [
-                URLQueryItem(name: "limit", value: "\(limit)")
-            ]
-        )
-        return try await network.request(endpoint)
-    }
 }
