@@ -11,23 +11,38 @@ struct AppInitialView: View {
     
     @StateObject private var userManager: UserManager
     
+    @State private var isLoading: Bool = false
+    @State private var showLogin: Bool = false
+    
     init() {
         _userManager = StateObject(wrappedValue: UserManager.instance)
     }
         
 	var body: some View {
-        Group {
-            if userManager.isRefreshingToken {
+        ZStack {
+            Color.black
+            
+            if isLoading {
                 ProgressView()
+                    .tint(.white)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.black)
-            } else if userManager.isLoggedIn {
+                    .background(.black)
+                
+            } else if !showLogin {
                 AppTabBarView()
-            } else {
-                LoginView()
             }
         }
         .environmentObject(userManager)
+        .fullScreenCover(isPresented: $showLogin) {
+            LoginView()
+                .environmentObject(userManager)
+        }
+        .onChange(of: userManager.isLoading) { isLoadingUser in
+            self.isLoading = isLoadingUser
+        }
+        .onChange(of: userManager.needLogin) { isNeedLogin in
+            self.showLogin = isNeedLogin
+        }
 	}
 }
 

@@ -29,7 +29,7 @@ struct SpotifyTokenResponse: Decodable {
 
 // MARK: - OAuthManager
 
-class OAuthManager: NSObject {
+class OAuthManager: NSObject, TokenRefreshProtocol {
 
     // MARK: - Private Enums
 

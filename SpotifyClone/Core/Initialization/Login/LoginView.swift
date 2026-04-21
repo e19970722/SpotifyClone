@@ -37,7 +37,6 @@ extension LoginView {
                             refreshToken: result.refreshToken,
                             expiresIn: result.expiresIn
                         )
-                        userManager.isLoggedIn = true
                     }
                     isPresentOAuth = false
                 }

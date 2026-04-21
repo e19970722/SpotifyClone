@@ -13,82 +13,116 @@ final class UserManager: ObservableObject {
 
     static let instance = UserManager()
 
-    @Published var isLoggedIn: Bool = false
+    @Published var needLogin: Bool = false
     @Published var defaultUser: SpotifyUser? = nil
-    @Published var playlists: [PlaylistItem]? = nil
-    @Published var isRefreshingToken: Bool = false
+    @Published var isLoading: Bool = false
 
     // MARK: - Private
 
     private let service: UserServiceProtocol
-    private var cancellables = Set<AnyCancellable>()
+    private let keychainManager: KeychainManagerProtocol
+    private let tokenRefresher: TokenRefreshProtocol
+    private let userDefaults: AppUserDefaults
     private var tokenTimer: Timer?
     private var refreshTokenTask: Task<Void, Error>?
 
-    private init(service: UserServiceProtocol = UserService()) {
+    private init(
+        service: UserServiceProtocol = UserService(),
+        keychainManager: KeychainManagerProtocol = KeychainManager.shared,
+        tokenRefresher: TokenRefreshProtocol = OAuthManager.instance,
+        userDefaults: AppUserDefaults = .shared
+    ) {
         self.service = service
-        restoreSession()
-        observeAppLifecycle()
+        self.keychainManager = keychainManager
+        self.tokenRefresher = tokenRefresher
+        self.userDefaults = userDefaults
+        
+        self.restoreSession()
+        self.observeAppLifecycle()
+    }
+
+    /// 僅供測試使用，繞過 singleton 限制
+    static func makeForTesting(
+        service: UserServiceProtocol = UserService(),
+        keychainManager: KeychainManagerProtocol,
+        tokenRefresher: TokenRefreshProtocol,
+        userDefaults: AppUserDefaults
+    ) -> UserManager {
+        UserManager(
+            service: service,
+            keychainManager: keychainManager,
+            tokenRefresher: tokenRefresher,
+            userDefaults: userDefaults
+        )
     }
 
     // MARK: - Public Functions
 
     /// 首次登入後儲存完整 token 資訊並啟動 expiry timer
     func saveSession(accessToken: String, refreshToken: String?, expiresIn: Int) {
-        try? KeychainManager.shared.save(accessToken, forKey: .accessToken)
+        try? keychainManager.save(accessToken, forKey: .accessToken)
         if let refreshToken {
-            try? KeychainManager.shared.save(refreshToken, forKey: .refreshToken)
+            try? keychainManager.save(refreshToken, forKey: .refreshToken)
         }
         persistExpiryDate(expiresIn: expiresIn)
-        fetchHomeInfo()
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.needLogin = false
+        }
+        
+        fetchUserInfo()
     }
-
+    
     func logout() {
-        clearTokensFromKeychain()
-        defaultUser = nil
-        isLoggedIn = false
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.clearTokensFromKeychain()
+            self.defaultUser = nil
+            self.needLogin = true
+        }
     }
 
     func userImageURL() -> URL? {
-        return URL(string: defaultUser?.images?.first?.url ?? "")
+        URL(string: defaultUser?.images?.first?.url ?? "")
+    }
+    
+    func fetchUserInfo() {
+        Task {
+            if let user = try? await service.fetchCurrentUser() {
+                await MainActor.run {
+                    defaultUser = user
+                }
+            }
+        }
     }
 
     // MARK: - Private: Session Restore
 
     private func restoreSession() {
-        let hasAccessToken = KeychainManager.shared.read(forKey: .accessToken) != nil
-        let hasRefreshToken = KeychainManager.shared.read(forKey: .refreshToken) != nil
+        let hasAccessToken = keychainManager.read(forKey: .accessToken) != nil
+        let hasRefreshToken = keychainManager.read(forKey: .refreshToken) != nil
 
         guard hasAccessToken || hasRefreshToken else {
-            // 無任何憑證 → 未登入
-            clearTokensFromKeychain()
-            isLoggedIn = false
+            logout()
             return
         }
 
-        if let expiryTimestamp = SpotifyUserDefaults.shared.tokenExpiryDate {
+        if let expiryTimestamp = userDefaults.tokenExpiryDate {
             let expiryDate = Date(timeIntervalSince1970: expiryTimestamp)
             if expiryDate > Date() {
-                // Token 仍有效 → 直接恢復登入狀態並重新啟動 timer
-                isLoggedIn = true
                 scheduleExpiryTimer(at: expiryDate)
-                fetchHomeInfo()
+                fetchUserInfo()
+
             } else if hasRefreshToken {
-                // Token 已過期但有 refresh token → 顯示 loading 並靜默更新
-                isLoggedIn = true
-                handleTokenExpired(showLaunchScreen: true)
+                handleTokenExpired(showLoading: true)
+
             } else {
-                clearTokensFromKeychain()
-                isLoggedIn = false
+                logout()
             }
+
         } else if hasRefreshToken {
-            // 無 expiryDate 記錄但有 refresh token → 嘗試更新
-            isLoggedIn = true
-            handleTokenExpired(showLaunchScreen: true)
-        } else {
-            // 有 accessToken 但無 expiryDate 也無 refreshToken（舊資料）→ 直接使用，不設 timer
-            isLoggedIn = true
-            fetchHomeInfo()
+            handleTokenExpired(showLoading: true)
         }
     }
 
@@ -96,73 +130,74 @@ final class UserManager: ObservableObject {
 
     private func persistExpiryDate(expiresIn: Int) {
         let expiryDate = Date().addingTimeInterval(TimeInterval(expiresIn) - 300)
-        SpotifyUserDefaults.shared.tokenExpiryDate = expiryDate.timeIntervalSince1970
-        SpotifyUserDefaults.shared.expiryToken = expiresIn
+        userDefaults.tokenExpiryDate = expiryDate.timeIntervalSince1970
+        userDefaults.tokenDuration = expiresIn
         scheduleExpiryTimer(at: expiryDate)
     }
 
     private func persistTokens(result: SpotifyTokenResponse) {
-        try? KeychainManager.shared.save(result.accessToken, forKey: .accessToken)
+        try? keychainManager.save(result.accessToken, forKey: .accessToken)
         if let refreshToken = result.refreshToken {
-            try? KeychainManager.shared.save(refreshToken, forKey: .refreshToken)
+            try? keychainManager.save(refreshToken, forKey: .refreshToken)
         }
         persistExpiryDate(expiresIn: result.expiresIn)
+        
+        guard defaultUser == nil else { return }
+        fetchUserInfo()
     }
 
     // MARK: - Private: Expiry Check
 
-    func checkTokenExpiry(showLaunchScreen: Bool = false) {
-        guard let expiryTimestamp = SpotifyUserDefaults.shared.tokenExpiryDate else { return }
+    func checkTokenExpiry(showLoading: Bool = false) {
+        guard let expiryTimestamp = userDefaults.tokenExpiryDate else { return }
         let expiryDate = Date(timeIntervalSince1970: expiryTimestamp)
 
         if Date() >= expiryDate {
-            handleTokenExpired(showLaunchScreen: showLaunchScreen)
+            handleTokenExpired(showLoading: showLoading)
         } else {
-            // Token 仍有效，重新計算剩餘時間並重新啟動 timer
             scheduleExpiryTimer(at: expiryDate)
         }
     }
 
-    private func handleTokenExpired(showLaunchScreen: Bool = false) {
-        if showLaunchScreen {
-            DispatchQueue.main.async { self.isRefreshingToken = true }
+    private func handleTokenExpired(showLoading: Bool = false) {
+        if showLoading {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.isLoading = true
+            }
         }
 
-        guard let refreshToken = KeychainManager.shared.read(forKey: .refreshToken) else {
-            forceLogout()
+        guard let refreshToken = keychainManager.read(forKey: .refreshToken) else {
+            logout()
             return
         }
 
         refreshTokenTask?.cancel()
         refreshTokenTask = Task {
             do {
-                let result = try await OAuthManager.instance.refreshAccessToken(refreshToken: refreshToken)
+                let result = try await tokenRefresher.refreshAccessToken(refreshToken: refreshToken)
                 try Task.checkCancellation()
+                persistTokens(result: result)
+                
                 await MainActor.run {
-                    self.persistTokens(result: result)
-                    self.isRefreshingToken = false
+                    isLoading = false
                 }
+                
             } catch {
                 await MainActor.run {
-                    self.forceLogout()
-                    self.isRefreshingToken = false
+                    logout()
+                    isLoading = false
                 }
             }
         }
     }
 
-    private func forceLogout() {
-        clearTokensFromKeychain()
-        defaultUser = nil
-        isLoggedIn = false
-    }
-
     private func clearTokensFromKeychain() {
         stopTokenTimer()
-        try? KeychainManager.shared.delete(forKey: .accessToken)
-        try? KeychainManager.shared.delete(forKey: .refreshToken)
-        SpotifyUserDefaults.shared.tokenExpiryDate = nil
-        SpotifyUserDefaults.shared.expiryToken = nil
+        try? keychainManager.delete(forKey: .accessToken)
+        try? keychainManager.delete(forKey: .refreshToken)
+        userDefaults.tokenExpiryDate = nil
+        userDefaults.tokenDuration = nil
     }
 
     // MARK: - Private: Timer
@@ -183,7 +218,7 @@ final class UserManager: ObservableObject {
         tokenTimer?.invalidate()
         tokenTimer = nil
     }
-
+    
     // MARK: - Private: App Lifecycle
 
     private func observeAppLifecycle() {
@@ -200,27 +235,8 @@ final class UserManager: ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            guard let self, self.isLoggedIn else { return }
-            self.checkTokenExpiry(showLaunchScreen: true)
-        }
-    }
-
-    // MARK: - Private: Data Fetch
-
-    private func fetchHomeInfo() {
-        Task {
-            if let user = try? await service.fetchCurrentUser() {
-                await MainActor.run {
-                    self.defaultUser = user
-                }
-            }
-
-            if let returnedValue = try? await service.fetchUserPlaylists(limit: 8, offset: 0),
-               let playlists = returnedValue.playlists {
-                await MainActor.run {
-                    self.playlists = playlists
-                }
-            }
+            guard let self = self, !needLogin else { return }
+            self.checkTokenExpiry(showLoading: true)
         }
     }
 }

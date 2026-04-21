@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SpotifyUser: Decodable, Identifiable {
+struct SpotifyUser: Decodable, Identifiable, Equatable {
     let id: String
     let displayName: String?
     let email: String?
@@ -33,17 +33,17 @@ struct SpotifyUser: Decodable, Identifiable {
     }
 }
 
-struct SpotifyImage: Decodable {
+struct SpotifyImage: Decodable, Equatable {
     let url: String
     let height: Int?
     let width: Int?
 }
 
-struct SpotifyFollowers: Decodable {
+struct SpotifyFollowers: Decodable, Equatable {
     let total: Int
 }
 
-struct SpotifyExternalUrls: Decodable {
+struct SpotifyExternalUrls: Decodable, Equatable {
     let spotify: String?
 }
 
@@ -65,6 +65,12 @@ struct SpotifyUserPlaylistResponse: Decodable {
         case playlists
     }
     
+    init(playlists: [PlaylistItem]?) {
+        self.href = nil; self.limit = nil; self.offset = nil
+        self.total = nil; self.items = nil
+        self.playlists = playlists
+    }
+
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.href = try container.decodeIfPresent(String.self, forKey: .href)

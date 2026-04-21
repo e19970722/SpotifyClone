@@ -5,139 +5,95 @@
 //  Created by Yen Lin on 2025/10/31.
 //
 
-import Combine
 import Foundation
-import Moya
 
-/// Spotify 專屬 UserDefaults
-/// ```
-/// 設定範例：SpotifyUserDefaults.shared.hasExample = true
-/// 存取範例：if SpotifyUserDefaults.shared.hasExample { }
-/// ```
-class SpotifyUserDefaults: UserDefaults {
+// MARK: - Custom Suite UserDefaults Manager
 
-    static let shared = SpotifyUserDefaults()
-    static let suitName = "com.Spotify.Settings"
-    lazy var Spotify: SpotifyUserDefaults? = .init(suiteName: SpotifyUserDefaults.suitName)
+final class AppUserDefaults {
     
-    // MARK: - Initializer
+    // MARK: - Suite Name
+        
+    static let shared = AppUserDefaults()
     
-    override private init?(suiteName name: String?) {
-        super.init(suiteName: name)
-    }
-
-    // MARK: - Functions
+    private let defaults: UserDefaults
+    private let suiteName: String
     
-    /// The integer value associated with the specified key.
-    /// If the specified key doesn‘t exist, this method returns 0.
-    func integer(forSpotify key: SpotifyKey) -> Int {
-        return SpotifyUserDefaults.shared.Spotify?.integer(forKey: key.rawValue) ?? 0
-    }
-    
-    /// The bool value associated with the specified key.
-    /// If the specified key doesn‘t exist, this method returns false.
-    func bool(forSpotify key: SpotifyKey) -> Bool {
-        return SpotifyUserDefaults.shared.Spotify?.bool(forKey: key.rawValue) ?? false
-    }
-    
-    /// The string value associated with the specified key.
-    /// If the specified key doesn‘t exist, this method returns nil.
-    func string(forSpotify key: SpotifyKey) -> String? {
-        return SpotifyUserDefaults.shared.Spotify?.string(forKey: key.rawValue)
-    }
-    
-    /// The array value associated with the specified key.
-    /// If the specified key doesn‘t exist, this method returns nil.
-    func array(forSpotify key: SpotifyKey) -> [Any]? {
-        return SpotifyUserDefaults.shared.Spotify?.array(forKey: key.rawValue) ?? nil
-    }
-
-    func setValue(_ value: Any?, forSpotify key: SpotifyKey) {
-        SpotifyUserDefaults.shared.Spotify?.setValue(value, forKey: key.rawValue)
-        SpotifyUserDefaults.shared.Spotify?.synchronize()
-    }
-    
-    func removeValue(forSpotify key: SpotifyKey) {
-        if SpotifyUserDefaults.shared.Spotify?.object(forKey: key.rawValue) != nil {
-            SpotifyUserDefaults.shared.Spotify?.removeObject(forKey: key.rawValue)
-            SpotifyUserDefaults.shared.Spotify?.synchronize()
+    init(suiteName: String = "com.Spotify.Settings") {
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
+            fatalError("無法建立 UserDefaults suite: \(suiteName)")
         }
+        self.defaults = defaults
+        self.suiteName = suiteName
     }
-}
-
-// MARK: - forSpotify UserDefault keys
-
-extension SpotifyUserDefaults {
-    enum SpotifyKey: String {
-        /// Key值範例
-        case example = "Example"
-        /// 第三方登入取得的 Token
-        case accessToken = "access_token"
-        /// 更新Token
-        case refreshToken = "refresh_token"
+    
+    // MARK: - Keys
+    
+    enum CustomKey: String {
+        /// Token 有效期間
+        case tokenDuration = "token_duration"
         /// Token 到期時間
-        case expiryToken = "expiry_token"
-        /// 上一次為登入或註冊，true為登入，false為註冊
-        case loginMode = "loginMode"
-        /// 當前貼文內容 HTML
-        case currentPostHTML = "currentPostHTML"
-        /// Token 到期的絕對時間（Unix timestamp，Double）
         case tokenExpiryDate = "token_expiry_date"
     }
     
-    /// 是否存在範例？
-    var hasExample: Bool {
-        get { SpotifyUserDefaults.shared.bool(forSpotify: .example) }
-        set { SpotifyUserDefaults.shared.setValue(newValue, forSpotify: .example) }
+    // MARK: - Getter / Setter
+    
+    private func set<T>(_ value: T, forKey key: CustomKey) {
+        defaults.set(value, forKey: key.rawValue)
     }
     
-    /// Token期限
-    var expiryToken: Int? {
-        get { SpotifyUserDefaults.shared.integer(forSpotify: .expiryToken) }
-        set { SpotifyUserDefaults.shared.setValue(newValue, forSpotify: .expiryToken) }
+    private func get<T>(forKey key: CustomKey) -> T? {
+        defaults.object(forKey: key.rawValue) as? T
     }
     
-    /// 第三方登入取得的 Token
-    var accessToken: String? {
-        get { SpotifyUserDefaults.shared.string(forSpotify: .accessToken) }
-        set { SpotifyUserDefaults.shared.setValue(newValue, forSpotify: .accessToken) }
+    private func bool(forKey key: CustomKey) -> Bool {
+        defaults.bool(forKey: key.rawValue)
     }
     
-    /// 登入取得的 RefreshToken
-    var refreshToken: String? {
-        get { SpotifyUserDefaults.shared.string(forSpotify: .refreshToken) }
-        set { SpotifyUserDefaults.shared.setValue(newValue, forSpotify: .refreshToken) }
+    private func string(forKey key: CustomKey) -> String? {
+        defaults.string(forKey: key.rawValue)
     }
     
-    /// 上一次為登入或註冊，true為登入，false為註冊
-    var loginMode: Bool {
-        get { SpotifyUserDefaults.shared.bool(forSpotify: .loginMode) }
-        set { SpotifyUserDefaults.shared.setValue(newValue, forSpotify: .loginMode) }
+    private func integer(forKey key: CustomKey) -> Int? {
+        defaults.object(forKey: key.rawValue) as? Int
     }
     
-    /// 當前貼文內容 HTML
-    var currentPostHTML: String? {
-        get { SpotifyUserDefaults.shared.string(forSpotify: .currentPostHTML) }
-        set { SpotifyUserDefaults.shared.setValue(newValue, forSpotify: .currentPostHTML) }
+    private func double(forKey key: CustomKey) -> Double? {
+        defaults.object(forKey: key.rawValue) as? Double
     }
+    
+    private func remove(forKey key: CustomKey) {
+        defaults.removeObject(forKey: key.rawValue)
+    }
+    
+    // MARK: - 常用便利屬性
+    
+    var tokenDuration: Int? {
+        get { integer(forKey: .tokenDuration) }
+        set {
+            if let newValue {
+                set(newValue, forKey: .tokenDuration)
 
-    /// Token 到期的絕對時間（Unix timestamp，nil 代表未設定）
-    var tokenExpiryDate: Double? {
-        get {
-            let val = SpotifyUserDefaults.shared.Spotify?.double(forKey: SpotifyKey.tokenExpiryDate.rawValue) ?? 0
-            return val == 0 ? nil : val
+            } else {
+                remove(forKey: .tokenDuration)
+            }
         }
-        set { SpotifyUserDefaults.shared.setValue(newValue, forSpotify: .tokenExpiryDate) }
     }
     
-    /// 清除所有UserDefaults內容
-    func resetAllWellWUserDefaults() {
-        SpotifyUserDefaults.shared.removeValue(forSpotify: .example)
+    var tokenExpiryDate: Double? {
+        get { double(forKey: .tokenExpiryDate) }
+        set {
+            if let newValue {
+                set(newValue, forKey: .tokenExpiryDate)
+
+            } else {
+                remove(forKey: .tokenExpiryDate)
+            }
+        }
     }
     
-    /// 刪除 accessToken - 登出
-    func clearAccessToken() {
-        SpotifyUserDefaults.shared.removeValue(forSpotify: .accessToken)
-        SpotifyUserDefaults.shared.removeValue(forSpotify: .refreshToken)
+    // MARK: - 清除所有資料（登出時用）
+    
+    func clearAll() {
+        defaults.removePersistentDomain(forName: suiteName)
     }
 }
