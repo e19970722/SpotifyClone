@@ -72,15 +72,20 @@ extension AlbumDetailView {
 
     private var infoSectionView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if let artistText = getArtistNames() {
-                Text(artistText)
+            if let title = album.title, !title.isEmpty {
+                Text(title)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(.white)
             }
 
-            madeForView
+            if let description = album.description, !description.isEmpty {
+                Text(description)
+                    .font(.system(size: 12))
+                    .foregroundStyle(.gray)
+                    .lineSpacing(4)
+            }
 
-            aboutView
-
-            if let duration = album.duration {
+            if let duration = album.duration, !duration.isEmpty {
                 Text(duration)
                     .font(.system(size: 12))
                     .foregroundStyle(.gray)
@@ -88,39 +93,6 @@ extension AlbumDetailView {
         }
         .padding(.horizontal, .design.padding16)
         .padding(.top, 12)
-    }
-
-    private var madeForView: some View {
-        HStack(spacing: 6) {
-            Image(.spotifyIcon)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 20, height: 20)
-                .clipShape(Circle())
-
-            if let madeFor = album.madeFor {
-                Text("Made for ")
-                    .font(.system(size: 13))
-                    .foregroundStyle(.white)
-                + Text(madeFor)
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundStyle(.white)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private var aboutView: some View {
-        Group {
-            if let description = album.description {
-                Text("About ")
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundStyle(.white)
-                + Text(description)
-                    .font(.system(size: 13))
-                    .foregroundStyle(.gray)
-            }
-        }
     }
 
     private var actionBarView: some View {
@@ -163,21 +135,24 @@ extension AlbumDetailView {
         .padding(.horizontal, .design.padding16)
     }
 
+    @ViewBuilder
     private var genreTagsView: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                ForEach(album.tags ?? [], id: \.self) { tag in
-                    Text(tag)
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .background(Color.theme.secondaryBtn)
-                        .clipShape(Capsule())
+        if let tags = album.tags, !tags.isEmpty {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(album.tags ?? [], id: \.self) { tag in
+                        Text(tag)
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(Color.theme.secondaryBtn)
+                            .clipShape(Capsule())
+                    }
                 }
+                .padding(.horizontal, .design.padding16)
+                .padding(.bottom, 8)
             }
-            .padding(.horizontal, .design.padding16)
-            .padding(.bottom, 8)
         }
     }
 
