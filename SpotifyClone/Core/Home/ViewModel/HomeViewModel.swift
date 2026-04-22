@@ -14,14 +14,45 @@ class HomeViewModel: ObservableObject {
     @Published var playlists: [PlaylistItem]?
     @Published var savedAlbums: [SpotifyUserSavedAlbum]? = nil
     @Published var recentlyPlayed: [SpotifyRecentlyPlayedItem]? = nil
-
-    @Published var newMusic: ItunesMusicVideo?
-    @Published var homeSections: [HomeSection]?
     
     private let service: HomeServiceProtocol
     private var cancellables = Set<AnyCancellable>()
 
     init(service: HomeServiceProtocol = HomeService()) {
         self.service = service
+    }
+    
+    func fetchData() {
+        Task {
+            await withTaskGroup { [weak self] group in
+                guard let self = self else { return }
+                group.addTask {
+                    if let returnedValued = try? await self.service.fetchUserPlaylists(limit: 8, offset: 0),
+                       let playlists = returnedValued.playlists {
+                        await MainActor.run {
+                            self.playlists = playlists
+                        }
+                    }
+                }
+                
+                group.addTask {
+                    if let returnedValued = try? await self.service.fetchSavedAlbums(limit: 10, offset: 0) {
+                        let savedAlbums = returnedValued.items?.compactMap { $0.album }
+                        await MainActor.run {
+                            self.savedAlbums = savedAlbums
+                        }
+                    }
+                }
+                
+                group.addTask {
+                    if let returnedValued = try? await self.service.fetchRecentlyPlayed(limit: 10),
+                       let recentlyPlayed = returnedValued.items {
+                        await MainActor.run {
+                            self.recentlyPlayed = recentlyPlayed
+                        }
+                    }
+                }
+            }
+        }
     }
 }

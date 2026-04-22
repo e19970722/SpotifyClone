@@ -40,11 +40,10 @@ struct HomeView: View {
             }
             .background(Color.theme.background)
             .onAppear {
-//                homeVM.fetchAlbums(artistName: "Mariah Carey", count: 8)
-//                homeVM.fetchMusicVideos(artistName: "Mariah Carey")
+                homeVM.fetchData()
             }
             .onTabAppear(tab: .home) {
-//                homeVM.fetchAlbums(artistName: "Mariah Carey", count: 8)
+                homeVM.fetchData()
             }
             .navigationDestination(
                 for: HomePath.self,
@@ -109,14 +108,6 @@ extension HomeView {
                 })
                 .frame(height: screenHeight * (257/874))
                 .padding(.horizontal, .design.padding16)
-            }
-            
-//            if let newMusicItem = homeVM.newMusic {
-//                newMusicView(newMusicItem)
-//            }
-            
-            if let homeSections = homeVM.homeSections {
-                homeSectionsView(homeSections)
             }
             
             if let albums = homeVM.savedAlbums {
