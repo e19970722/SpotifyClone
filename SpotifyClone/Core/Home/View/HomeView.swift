@@ -14,6 +14,8 @@ struct HomeView: View {
     
     @StateObject private var homeVM: HomeViewModel
     
+    @Binding var onTapSameTab: Bool
+    
     @State private var path = NavigationPath()
     @State private var selectedSegment: HomeSegmentType = .all
     
@@ -25,8 +27,9 @@ struct HomeView: View {
         return UIScreen.main.bounds.height
     }
         
-    init() {
+    init(onTapSameTab: Binding<Bool>) {
         _homeVM = StateObject(wrappedValue: HomeViewModel())
+        _onTapSameTab = onTapSameTab
     }
     
     var body: some View {
@@ -49,12 +52,20 @@ struct HomeView: View {
                 for: HomePath.self,
                 destination: decideNavigationForHomePath
             )
+            .onChange(of: onTapSameTab) { _ in
+                if !path.isEmpty {
+                    path.removeLast(path.count)
+                    
+                } else {
+                    homeVM.fetchData()
+                }
+            }
         }
     }
 }
 
 #Preview {
-    HomeView()
+    HomeView(onTapSameTab: .constant(false))
         .environmentObject(UserManager.instance)
 }
 

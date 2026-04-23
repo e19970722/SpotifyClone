@@ -66,7 +66,7 @@ struct AppTabBarView: View {
 
 extension AppTabBarView {
     private var homeTab: some View {
-        HomeView()
+        HomeView(onTapSameTab: $onTapSameTabFirst)
             .tabBarItem(tab: .home, selection: $tabSelection)
     }
     
