@@ -185,6 +185,11 @@ extension HomeView {
                         horizontalListView(itemWidth: width,
                                            imageURL: URL(string: albumURLStr),
                                            title: album.name)
+                        .onTapGesture {
+                            if let id = album.id {
+                                path.append(HomePath.detailView(id: id))
+                            }
+                        }
                     }
                 }
             }
@@ -201,6 +206,11 @@ extension HomeView {
                         horizontalListView(itemWidth: width,
                                            imageURL: URL(string: albumURLStr),
                                            title: item.track?.album?.name)
+                        .onTapGesture {
+                            if let id = item.track?.album?.id {
+                                path.append(HomePath.detailView(id: id))
+                            }
+                        }
                     }
                 }
             }

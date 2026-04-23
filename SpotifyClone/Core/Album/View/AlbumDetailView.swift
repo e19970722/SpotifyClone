@@ -57,6 +57,8 @@ struct AlbumDetailView: View {
         .onAppear {
             if isPlaylist {
                 albumVM.fetchPlaylist(id: albumID)
+            } else {
+                albumVM.fetchAlbum(id: albumID)
             }
         }
     }
