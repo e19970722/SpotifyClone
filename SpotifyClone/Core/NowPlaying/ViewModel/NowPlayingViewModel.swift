@@ -81,6 +81,20 @@ class NowPlayingViewModel: ObservableObject {
         player?.pause()
         isPlaying = false
     }
+    
+    func playerSeek(to progress: Double) {
+        guard let playerItem = player?.currentItem else { return }
+        let totalDuration = playerItem.duration.seconds
+        playerItem.seek(to: .init(seconds: totalDuration * progress, preferredTimescale: 1))
+        { [weak self] isFinished in
+            guard let self = self else { return }
+            if isFinished {
+                DispatchQueue.main.async {
+                    self.isSeeking = false
+                }
+            }
+        }
+    }
 
     private func addMusicTimeObserver() {
         player?.addPeriodicTimeObserver(

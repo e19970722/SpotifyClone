@@ -114,7 +114,12 @@ extension NowPlayingFullScreenView {
     private var progressBarView: some View {
         VStack(spacing: 4) {
             PlayingProgressView(progress: $vm.progress,
-                                canDrag: true)
+                                lastProgressDrag: $vm.lastProgressDrag,
+                                isSeeking: $vm.isSeeking,
+                                canDrag: true,
+                                onSeekTo: { progress in
+                vm.playerSeek(to: progress)
+            })
             .frame(height: 6)
 
             HStack {

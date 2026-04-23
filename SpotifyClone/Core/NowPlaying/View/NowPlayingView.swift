@@ -44,7 +44,10 @@ extension NowPlayingView {
     }
     
     private var progressView: some View {
-        PlayingProgressView(progress: $vm.progress, canDrag: false)
+        PlayingProgressView(progress: $vm.progress,
+                            lastProgressDrag: $vm.lastProgressDrag,
+                            isSeeking: $vm.isSeeking,
+                            canDrag: false)
             .frame(height: 2)
     }
     

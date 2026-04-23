@@ -5,17 +5,19 @@
 //  Created by Yen Lin on 2026/4/20.
 //
 
+import AVKit
 import SwiftUI
 
 struct PlayingProgressView: View {
     @Binding var progress: Double
-    
+    @Binding var lastProgressDrag: Double
+    @Binding var isSeeking: Bool
+
     @GestureState private var isDragging: Bool = false
-    @State private var isSeeking: Bool = false
-    @State private var lastProgressDrag: CGFloat = 0
     
     var canDrag: Bool = false
-    
+    var onSeekTo: ((_ progress: Double) -> Void)? = nil
+        
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
@@ -24,7 +26,7 @@ struct PlayingProgressView: View {
                 
                 Rectangle()
                     .fill(.white)
-                    .frame(width: max(geo.size.width * progress + geo.size.height, 0))
+                    .frame(width: max(geo.size.width * progress, 0))
             }
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .overlay(alignment: .leading) {
@@ -37,8 +39,15 @@ struct PlayingProgressView: View {
 }
 
 #Preview {
-    PlayingProgressView(progress: .constant(0.0), canDrag: true)
-        .background(.black)
+    ZStack {
+        Color.black
+
+        PlayingProgressView(progress: .constant(1.0),
+                            lastProgressDrag: .constant(0.0),
+                            isSeeking: .constant(false),
+                            canDrag: true)
+            .frame(width: UIScreen.main.bounds.size.width, height: 10)
+    }
 }
 
 extension PlayingProgressView {
@@ -51,7 +60,7 @@ extension PlayingProgressView {
             .frame(width: 50, height: 50)
             .contentShape(Rectangle())
             /// Moving along with gesture progress
-            .offset(x: (progress == 1) ? size.width * progress - 16 : size.width * progress)
+            .offset(x: (size.width * progress) - (componentHeight / 2))
             .gesture(
                 DragGesture()
                     .updating($isDragging, body: { _, out, _ in
@@ -66,9 +75,7 @@ extension PlayingProgressView {
                     })
                     .onEnded({ value in
                         lastProgressDrag = progress
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            isSeeking = false
-                        }
+                        onSeekTo?(progress)
                     })
             )
             .frame(width: componentHeight, height: componentHeight)
