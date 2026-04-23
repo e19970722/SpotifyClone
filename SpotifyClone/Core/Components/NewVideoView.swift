@@ -30,7 +30,7 @@ struct NewVideoView: View {
     }
 }
 
-#Preview(traits: .sizeThatFitsLayout) {
+#Preview {
     NewVideoView(thumbnailURL: URL(string: ""), videoURL: URL(string: ""))
         .frame(height: 300)
 }

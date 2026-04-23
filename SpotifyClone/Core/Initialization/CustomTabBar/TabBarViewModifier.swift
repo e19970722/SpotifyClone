@@ -45,7 +45,7 @@ struct isTabFirstAppearViewModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .onChange(of: tabSelection) { _, selection in
+            .onChange(of: tabSelection) { selection in
                 guard tab == selection else { return }
                 
                 if isTabFirstAppear[selection] == nil {
@@ -73,7 +73,7 @@ struct onTabAppearViewModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .onChange(of: tabSelection) { _, selection in
+            .onChange(of: tabSelection) { selection in
                 guard tab == selection else { return }
                 appearAction?()
             }

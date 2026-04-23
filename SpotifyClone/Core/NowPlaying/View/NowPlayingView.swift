@@ -27,7 +27,7 @@ struct NowPlayingView: View {
     }
 }
 
-#Preview(traits: .sizeThatFitsLayout) {
+#Preview {
     NowPlayingView()
         .frame(height: UIScreen.main.bounds.height * (70 / 874))
         .environmentObject(NowPlayingViewModel())

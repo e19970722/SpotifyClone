@@ -50,7 +50,7 @@ extension PlaylistCollectionView {
     }
 }
 
-#Preview(traits: .sizeThatFitsLayout) {
+#Preview {
     PlaylistCollectionView(imageURL: URL(string: "about:blank"), title: "Playlist Name")
         .frame(width: UIScreen.main.bounds.width, height: 120)
 }

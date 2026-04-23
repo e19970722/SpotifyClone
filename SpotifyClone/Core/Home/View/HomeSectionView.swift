@@ -26,7 +26,7 @@ struct HomeSectionView: View {
     }
 }
 
-#Preview(traits: .sizeThatFitsLayout) {
+#Preview {
     if let firstSection = DeveloperPreview.instance.homeSections.first {
         HomeSectionView(section: firstSection)
             .background(.black)

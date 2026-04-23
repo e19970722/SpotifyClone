@@ -28,7 +28,7 @@ struct AlbumImageTextView: View {
     }
 }
 
-#Preview(traits: .sizeThatFitsLayout) {
+#Preview {
     AlbumImageTextView(imageName: "",
                        description: "")
     .background(.black)

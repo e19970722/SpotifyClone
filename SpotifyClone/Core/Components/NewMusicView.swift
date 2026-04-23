@@ -25,7 +25,7 @@ struct NewMusicView: View {
     }
 }
 
-#Preview(traits: .sizeThatFitsLayout) {
+#Preview {
     NewMusicView(item: ItunesMusicVideo(artistName: nil, trackName: nil, artworkUrl100: nil, previewUrl: nil))
         .frame(width: 380, height: UIScreen.main.bounds.height * 0.4)
         .background(.black)
