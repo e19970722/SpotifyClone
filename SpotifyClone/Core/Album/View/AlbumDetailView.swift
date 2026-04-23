@@ -140,11 +140,13 @@ extension AlbumDetailView {
                 
                 if nowPlayingVM.isShuffle,
                    let randomIndex = (0...tracks.count-1).randomElement() {
-                    nowPlayingVM.loadPlayer(tracks: tracks,
+                    nowPlayingVM.loadPlayer(album: album,
+                                            tracks: tracks,
                                             selectedTrack: tracks[randomIndex])
                     
                 } else if let firstTrack = tracks.first {
-                    nowPlayingVM.loadPlayer(tracks: tracks,
+                    nowPlayingVM.loadPlayer(album: album,
+                                            tracks: tracks,
                                             selectedTrack: firstTrack)
                 }
                 
@@ -240,7 +242,8 @@ extension AlbumDetailView {
         .padding(.vertical, 10)
         .contentShape(.rect)
         .onTapGesture {
-            nowPlayingVM.loadPlayer(tracks: tracks,
+            nowPlayingVM.loadPlayer(album: album,
+                                    tracks: tracks,
                                     selectedTrack: track)
         }
     }

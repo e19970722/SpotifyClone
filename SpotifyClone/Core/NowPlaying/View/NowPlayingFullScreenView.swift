@@ -54,7 +54,7 @@ extension NowPlayingFullScreenView {
 
             Spacer()
 
-            Text(vm.currentSong?.title ?? "")
+            Text(vm.currentAlbum?.title ?? "")
                 .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(.white)
                 .lineLimit(1)

@@ -21,7 +21,8 @@ enum PlayingDevice: String {
 }
 
 class NowPlayingViewModel: ObservableObject {
-    @Published var tracks: [TrackItem]? = nil
+    @Published var currentAlbum: AlbumItem? = nil
+    @Published var currentTracks: [TrackItem]? = nil
     @Published var currentSong: TrackItem? = nil
     @Published var isShuffle: Bool = false
     @Published var isRepeat: Bool = false
@@ -58,8 +59,9 @@ class NowPlayingViewModel: ObservableObject {
             }
     }
 
-    func loadPlayer(tracks: [TrackItem], selectedTrack: TrackItem) {
-        self.tracks = tracks
+    func loadPlayer(album: AlbumItem? = nil, tracks: [TrackItem], selectedTrack: TrackItem) {
+        currentAlbum = album
+        currentTracks = tracks
         player?.pause()
         player = nil
         progress = 0.0
@@ -84,7 +86,7 @@ class NowPlayingViewModel: ObservableObject {
     }
 
     func playNext() {
-        guard let tracks = tracks, !tracks.isEmpty,
+        guard let tracks = currentTracks, !tracks.isEmpty,
               let currentSong = currentSong,
               let currentIndex = tracks.firstIndex(where: { $0.id == currentSong.id }) else { return }
 
@@ -110,7 +112,7 @@ class NowPlayingViewModel: ObservableObject {
     }
 
     func playPrevious() {
-        guard let tracks = tracks, !tracks.isEmpty,
+        guard let tracks = currentTracks, !tracks.isEmpty,
               let currentSong = currentSong,
               let currentIndex = tracks.firstIndex(where: { $0.id == currentSong.id }) else { return }
 
