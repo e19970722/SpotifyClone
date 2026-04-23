@@ -14,6 +14,8 @@ struct AlbumDetailView: View {
     
     @StateObject private var albumVM: AlbumViewModel
     
+    @State private var scrollOffset: Double = 0.0
+    
     let albumID: String
     private let isPlaylist: Bool
 
@@ -46,7 +48,16 @@ struct AlbumDetailView: View {
                 genreTagsView
                 trackListView
             }
+            .background(
+                GeometryReader { geo in
+                    Color.clear
+                        .onChange(of: geo.frame(in: .named("scroll")).minY) { value in
+                            scrollOffset = -Double(value)
+                        }
+                }
+            )
         }
+        .coordinateSpace(name: "scroll")
         .padding(.bottom, tabBarHeight)
         .background(
             LinearBackgroundView(mainColor: .purple)
@@ -64,17 +75,23 @@ struct AlbumDetailView: View {
 
 #Preview {
     AlbumDetailView(albumID: "")
+        .environmentObject(NowPlayingViewModel())
 }
 
 // MARK: - Sub-views
 extension AlbumDetailView {
 
     private var headerView: some View {
-        KFImage(album.imageURL)
+        let componentWidth = 240.0
+        let scaled = scrollOffset > 0 ? (componentWidth - scrollOffset) / componentWidth : 1.0
+        return KFImage(album.imageURL)
             .resizable()
             .aspectRatio(1.0, contentMode: .fill)
-            .padding(.horizontal, 64)
+            .frame(width: componentWidth, height: componentWidth)
+            .opacity(scaled)
+            .scaleEffect(scaled, anchor: .center)
             .padding(.top, 16)
+            .frame(maxWidth: .infinity, alignment: .center)
     }
 
     private var infoSectionView: some View {
