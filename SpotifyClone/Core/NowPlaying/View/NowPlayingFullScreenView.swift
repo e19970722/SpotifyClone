@@ -142,15 +142,17 @@ extension NowPlayingFullScreenView {
     private var controlsView: some View {
         HStack {
             Button {
+                vm.isShuffle.toggle()
             } label: {
                 Image(systemName: "shuffle")
                     .font(.system(size: 20))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(vm.isShuffle ? Color.theme.green : .white)
             }
 
             Spacer()
 
             Button {
+                vm.playPrevious()
             } label: {
                 Image(systemName: "backward.end.fill")
                     .font(.system(size: 24))
@@ -161,7 +163,6 @@ extension NowPlayingFullScreenView {
 
             Button {
                 vm.isPlaying.toggle()
-                
             } label: {
                 ZStack {
                     Circle()
@@ -177,6 +178,7 @@ extension NowPlayingFullScreenView {
             Spacer()
 
             Button {
+                vm.playNext()
             } label: {
                 Image(systemName: "forward.end.fill")
                     .font(.system(size: 24))
@@ -186,10 +188,11 @@ extension NowPlayingFullScreenView {
             Spacer()
 
             Button {
+                vm.isRepeat.toggle()
             } label: {
                 Image(systemName: "repeat")
                     .font(.system(size: 20))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(vm.isRepeat ? Color.theme.green : .white)
             }
         }
         .padding(.horizontal, .design.padding16)

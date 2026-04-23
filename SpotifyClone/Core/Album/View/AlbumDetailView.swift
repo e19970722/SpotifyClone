@@ -13,8 +13,6 @@ struct AlbumDetailView: View {
     @EnvironmentObject private var nowPlayingVM: NowPlayingViewModel
     
     @StateObject private var albumVM: AlbumViewModel
-
-    @State private var isShuffle: Bool = false
     
     let albumID: String
     private let isPlaylist: Bool
@@ -127,12 +125,12 @@ extension AlbumDetailView {
             Spacer()
 
             Button {
-                isShuffle.toggle()
+                nowPlayingVM.isShuffle.toggle()
                 
             } label: {
                 Image(systemName: "shuffle")
                     .font(.system(size: 22))
-                    .foregroundStyle(isShuffle ? Color.theme.green : .gray)
+                    .foregroundStyle(nowPlayingVM.isShuffle ? Color.theme.green : .gray)
             }
 
             let isContain = tracks.contains(where: { $0.id == nowPlayingVM.currentSong?.id })
@@ -140,7 +138,7 @@ extension AlbumDetailView {
                 nowPlayingVM.isPlaying.toggle()
                 guard !isContain else { return }
                 
-                if isShuffle,
+                if nowPlayingVM.isShuffle,
                    let randomIndex = (0...tracks.count-1).randomElement() {
                     nowPlayingVM.loadPlayer(tracks: tracks,
                                             selectedTrack: tracks[randomIndex])

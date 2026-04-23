@@ -23,13 +23,15 @@ enum PlayingDevice: String {
 class NowPlayingViewModel: ObservableObject {
     @Published var tracks: [TrackItem]? = nil
     @Published var currentSong: TrackItem? = nil
+    @Published var isShuffle: Bool = false
+    @Published var isRepeat: Bool = false
     @Published var isPlaying: Bool = false
     @Published var isSeeking: Bool = false
     @Published var progress: Double = 0.0
     @Published var lastProgressDrag: Double = 0.0
     @Published var currentDuration: Double = 0.0
     @Published var totalDuration: Double = 0.0
-    
+
     @Published var playingPlatform: PlayingPlatform = .headphone
     @Published var playingDevice: PlayingDevice = .bluetooth
     @Published var deviceName = "My Device"
@@ -42,12 +44,11 @@ class NowPlayingViewModel: ObservableObject {
         self.nowPlayingService = nowPlayingService
         self.addPlayingStateSubscription()
     }
-    
+
     func addPlayingStateSubscription() {
         playingSubscription = $isPlaying
             .sink { [weak self] isPlay in
                 guard let self = self else { return }
-                
                 if isPlay {
                     player?.play()
                     
@@ -56,8 +57,9 @@ class NowPlayingViewModel: ObservableObject {
                 }
             }
     }
-    
+
     func loadPlayer(tracks: [TrackItem], selectedTrack: TrackItem) {
+        self.tracks = tracks
         player?.pause()
         player = nil
         progress = 0.0
@@ -65,13 +67,13 @@ class NowPlayingViewModel: ObservableObject {
         totalDuration = 0.0
         currentDuration = 0.0
         currentSong = selectedTrack
-        
+
         Task {
             if let urlString = try await nowPlayingService.fetchPreviewUrl(trackName: selectedTrack.title),
                let url = URL(string: urlString) {
                 player = AVPlayer(url: url)
                 addMusicTimeObserver()
-                
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
                     guard let self = self else { return }
                     self.player?.play()
@@ -80,7 +82,65 @@ class NowPlayingViewModel: ObservableObject {
             }
         }
     }
-    
+
+    func playNext() {
+        guard let tracks = tracks, !tracks.isEmpty,
+              let currentSong = currentSong,
+              let currentIndex = tracks.firstIndex(where: { $0.id == currentSong.id }) else { return }
+
+        let nextTrack: TrackItem
+        if isShuffle {
+            let others = (0..<tracks.count).filter { $0 != currentIndex }
+            guard let randomIndex = others.randomElement() else { return }
+            nextTrack = tracks[randomIndex]
+            
+        } else {
+            let nextIndex = currentIndex + 1
+            if nextIndex < tracks.count {
+                nextTrack = tracks[nextIndex]
+                
+            } else if let firstTrack = tracks.first {
+                nextTrack = firstTrack
+                
+            } else {
+                return
+            }
+        }
+        loadPlayer(tracks: tracks, selectedTrack: nextTrack)
+    }
+
+    func playPrevious() {
+        guard let tracks = tracks, !tracks.isEmpty,
+              let currentSong = currentSong,
+              let currentIndex = tracks.firstIndex(where: { $0.id == currentSong.id }) else { return }
+
+        // Restart current song if played more than 3 seconds
+        if currentDuration > 3 {
+            playerSeek(to: 0)
+            return
+        }
+
+        let prevTrack: TrackItem
+        if isShuffle {
+            let others = (0..<tracks.count).filter { $0 != currentIndex }
+            guard let randomIndex = others.randomElement() else { return }
+            prevTrack = tracks[randomIndex]
+            
+        } else {
+            let prevIndex = currentIndex - 1
+            if prevIndex >= 0 {
+                prevTrack = tracks[prevIndex]
+                
+            } else if let lastTrack = tracks.last {
+                prevTrack = lastTrack
+                
+            } else {
+                return
+            }
+        }
+        loadPlayer(tracks: tracks, selectedTrack: prevTrack)
+    }
+
     func playerSeek(to progress: Double) {
         guard let playerItem = player?.currentItem else { return }
         let totalDuration = playerItem.duration.seconds
@@ -104,25 +164,29 @@ class NowPlayingViewModel: ObservableObject {
                 let totalDuration = currentPlayerItem.duration.seconds
                 guard totalDuration > 0,
                       let currentDuration = player?.currentTime().seconds else { return }
-                
+
                 DispatchQueue.main.async {
                     self.currentDuration = currentDuration
                     self.totalDuration = totalDuration
                 }
-                
+
                 let calculatedProgress = currentDuration / totalDuration
-                
+
                 if !isSeeking {
                     progress = max(min(calculatedProgress, 1), 0)
                     lastProgressDrag = progress
                 }
-                
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     if calculatedProgress == 1 {
-                        self.player?.seek(to: .zero)
-                        self.progress = .zero
-                        self.lastProgressDrag = .zero
-                        self.player?.play()
+                        if self.isRepeat {
+                            self.player?.seek(to: .zero)
+                            self.progress = .zero
+                            self.lastProgressDrag = .zero
+                            self.player?.play()
+                        } else {
+                            self.playNext()
+                        }
                     }
                 }
             }
