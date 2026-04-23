@@ -43,4 +43,5 @@ struct TrackItem: Identifiable, Hashable {
     let artists: String?
     let imageURL: URL?
     let hasVideo: Bool
+    let duration: Double?
 }

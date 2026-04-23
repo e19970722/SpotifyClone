@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct NowPlayingFullScreenView: View {
 
@@ -53,7 +54,7 @@ extension NowPlayingFullScreenView {
 
             Spacer()
 
-            Text(vm.currentSong.albumName)
+            Text(vm.currentSong?.title ?? "")
                 .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(.white)
                 .lineLimit(1)
@@ -74,10 +75,11 @@ extension NowPlayingFullScreenView {
 
     private var albumArtView: some View {
         let size = screenWidth - .design.padding16 * 2
-        return Image(vm.currentSong.albumImageName)
+        return KFImage(vm.currentSong?.imageURL)
             .resizable()
             .aspectRatio(1, contentMode: .fit)
             .frame(width: size, height: size)
+            .background(Color.theme.secondaryBtn)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .padding(.bottom, 32)
     }
@@ -85,12 +87,12 @@ extension NowPlayingFullScreenView {
     private var songInfoView: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 4) {
-                Text(vm.currentSong.songName)
+                Text(vm.currentSong?.title ?? "")
                     .font(.system(size: 22, weight: .bold))
                     .foregroundStyle(.white)
                     .lineLimit(1)
 
-                Text(vm.currentSong.artist)
+                Text(vm.currentSong?.artists ?? "")
                     .font(.system(size: 16))
                     .foregroundStyle(.gray)
                     .lineLimit(1)
@@ -111,20 +113,21 @@ extension NowPlayingFullScreenView {
 
     private var progressBarView: some View {
         VStack(spacing: 4) {
-            PlayingProgressView(progress: $vm.currentProgress,
+            PlayingProgressView(progress: $vm.progress,
                                 canDrag: true)
             .frame(height: 6)
 
             HStack {
-                Text(formatTime(vm.currentTimerSec))
+                Text(vm.currentDuration.rounded().formatTimeStr())
                     .font(.system(size: 12))
-                    .foregroundStyle(Color.theme.secondaryText)
+                    .foregroundStyle(.gray)
 
                 Spacer()
 
-                Text(formatRemainingTime())
+                let remainingTime = vm.totalDuration - vm.currentDuration
+                Text("-\(remainingTime.rounded().formatTimeStr())")
                     .font(.system(size: 12))
-                    .foregroundStyle(Color.theme.secondaryText)
+                    .foregroundStyle(.gray)
             }
         }
         .padding(.horizontal, .design.padding16)
@@ -219,18 +222,5 @@ extension NowPlayingFullScreenView {
             }
         }
         .padding(.horizontal, .design.padding16)
-    }
-
-    // MARK: - Helpers
-
-    private func formatTime(_ seconds: Double) -> String {
-        let total = Int(seconds)
-        return String(format: "%d:%02d", total / 60, total % 60)
-    }
-
-    private func formatRemainingTime() -> String {
-        guard let duration = vm.currentSong.duration else { return "-0:00" }
-        let remaining = Int(duration - vm.currentTimerSec)
-        return String(format: "-%d:%02d", remaining / 60, remaining % 60)
     }
 }

@@ -11,6 +11,7 @@ import Kingfisher
 struct AlbumDetailView: View {
     @Environment(\.tabBarHeight) private var tabBarHeight
 
+    @EnvironmentObject private var nowPlayingVM: NowPlayingViewModel
     @StateObject private var albumVM: AlbumViewModel
 
     let albumID: String
@@ -213,6 +214,10 @@ extension AlbumDetailView {
         }
         .padding(.horizontal, .design.padding16)
         .padding(.vertical, 10)
+        .contentShape(.rect)
+        .onTapGesture {
+            nowPlayingVM.currentSong = track
+        }
     }
 }
 

@@ -29,12 +29,14 @@ struct SpotifyPlaylistDetail: Decodable {
                 .compactMap { $0.name }
                 .joined(separator: ", ")
             let trackImageURL = track.album?.images?.first.flatMap { $0.url.flatMap { URL(string: $0) } }
+            let durationSec = track.durationMs.map { Double($0) / 1000.0 }
             return TrackItem(
                 id: track.id ?? UUID().uuidString,
                 title: track.name ?? "",
                 artists: artists,
                 imageURL: trackImageURL,
-                hasVideo: false
+                hasVideo: false,
+                duration: durationSec
             )
         }
 

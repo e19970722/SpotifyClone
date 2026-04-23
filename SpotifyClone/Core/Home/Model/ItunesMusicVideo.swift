@@ -7,6 +7,14 @@
 
 import Foundation
 
+struct ItunesTrackResponse: Decodable {
+    let results: [ItunesTrack]?
+}
+
+struct ItunesTrack: Decodable {
+    let previewUrl: String?
+}
+
 struct ItunesMusicVideoResponse: Decodable {
     let results: [ItunesMusicVideo]?
 }

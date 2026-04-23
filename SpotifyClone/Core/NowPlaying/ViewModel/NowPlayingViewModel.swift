@@ -21,85 +21,98 @@ enum PlayingDevice: String {
 }
 
 class NowPlayingViewModel: ObservableObject {
+    @Published var currentSong: TrackItem? = nil
+    @Published var isPlaying: Bool = false
+    @Published var isSeeking: Bool = false
+    @Published var progress: Double = 0.0
+    @Published var lastProgressDrag: Double = 0.0
+    @Published var currentDuration: Double = 0.0
+    @Published var totalDuration: Double = 0.0
     
-    // ⚠️ TODO: 傳入真實播放值
-    @Published var isPlaying: Bool = true
-    @Published var currentSong: MusicItem = DeveloperPreview.instance.currentSong
-    @Published var currentProgress: Double = 0.0
     @Published var playingPlatform: PlayingPlatform = .headphone
     @Published var playingDevice: PlayingDevice = .bluetooth
-    @Published var deviceName = DeveloperPreview.instance.deviceName
-    /// 目前播到幾秒
-    @Published var currentTimerSec: Double = 0.0
-    
+    @Published var deviceName = "My Device"
+
     private var player: AVPlayer?
-    private var playingTimeSubscription: AnyCancellable?
-    private var cancellables = Set<AnyCancellable>()
-    
-    init() {
-        addObserver()
+    private var currentSongSubscription: AnyCancellable?
+    private let nowPlayingService: NowPlayingServiceProtocol
+
+    init(nowPlayingService: NowPlayingServiceProtocol = NowPlayingService()) {
+        self.nowPlayingService = nowPlayingService
+        addCurrentSongSubscription()
     }
-    
-    private func addObserver() {
-        self.$currentTimerSec
-            .sink { [weak self] sec in
-                guard let self = self,
-                      let duration = currentSong.duration else { return }
-                if self.currentTimerSec > duration {
-                    self.pause()
-                } else {
-                    self.currentProgress = sec / duration
-                }
-                print("**** currentSec: \(self.currentTimerSec)")
+
+    private func addCurrentSongSubscription() {
+        currentSongSubscription = $currentSong
+            .sink { [weak self] track in
+                guard let self = self, let track = track else { return }
+                self.loadPlayer(track: track)
             }
-            .store(in: &cancellables)
     }
     
-    func loadSong(song: MusicItem) {
-        if let songURLString = self.currentSong.songUrl,
-           let musicURL = URL(string: songURLString) {
-            player = AVPlayer(url: musicURL)
-        }
-    }
-    
-    func play() {
-        print("***** Start Playing")
-        guard let duration = currentSong.duration else { return }
-        if self.currentTimerSec == duration {
-            self.currentTimerSec = 0.0
-        }
+    func loadPlayer(track: TrackItem) {
+        player?.pause()
+        player = nil
+        progress = 0.0
+        lastProgressDrag = 0.0
+        totalDuration = 0.0
+        currentDuration = 0.0
         
-        playingTimeSubscription?.cancel()
-        playingTimeSubscription = nil
-        playingTimeSubscription = Timer
-            .publish(every: 1, on: .main, in: .common)
-            .autoconnect()
-            .scan(self.currentTimerSec, { (sec, _ ) in
-                return sec + 1.0
-            })
-            /// Timer繼續存活的條件
-            .prefix{ sec in
-                return sec <= duration
-            }
-            .sink(receiveCompletion: { [weak self] _ in
-                guard let self = self else { return }
-                self.isPlaying = false
-                print("***** Timer Completed")
+        Task {
+            if let urlString = try await nowPlayingService.fetchPreviewUrl(trackName: track.title),
+               let url = URL(string: urlString) {
+                player = AVPlayer(url: url)
+                addMusicTimeObserver()
                 
-            }, receiveValue: { [weak self] sec in
-                guard let self = self else { return }
-                self.currentTimerSec = sec
-            })
-        
-        self.player?.play()
-        self.isPlaying = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                    guard let self = self else { return }
+                    self.play()
+                }
+            }
+        }
     }
-    
+
+    func play() {
+        player?.play()
+        isPlaying = true
+    }
+
     func pause() {
-        print("***** Stop Playing")
-        self.player?.pause()
-        self.isPlaying = false
-        self.playingTimeSubscription?.cancel()
-        self.playingTimeSubscription = nil
+        player?.pause()
+        isPlaying = false
+    }
+
+    private func addMusicTimeObserver() {
+        player?.addPeriodicTimeObserver(
+            forInterval: .init(seconds: 1, preferredTimescale: 1), queue: .main
+        ) { [weak self] time in
+            guard let self = self else { return }
+            if let currentPlayerItem = player?.currentItem {
+                let totalDuration = currentPlayerItem.duration.seconds
+                guard totalDuration > 0,
+                      let currentDuration = player?.currentTime().seconds else { return }
+                
+                DispatchQueue.main.async {
+                    self.currentDuration = currentDuration
+                    self.totalDuration = totalDuration
+                }
+                
+                let calculatedProgress = currentDuration / totalDuration
+                
+                if !isSeeking {
+                    progress = max(min(calculatedProgress, 1), 0)
+                    lastProgressDrag = progress
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    if calculatedProgress == 1 {
+                        self.player?.seek(to: .zero)
+                        self.progress = .zero
+                        self.lastProgressDrag = .zero
+                        self.player?.play()
+                    }
+                }
+            }
+        }
     }
 }

@@ -38,16 +38,6 @@ class DeveloperPreview {
     let songUrl = "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/95/df/e5/95dfe5ac-efe4-5422-e39d-a015a9cf2b1f/mzaf_10401943975266303767.plus.aac.p.m4a"
     let deviceName = "Yen Lin's Airpods Pro"
     
-    lazy var currentSong = MusicItem(artist: self.artist,
-                                     artistImageName: "Artist",
-                                     songName: self.song,
-                                     albumName: self.song,
-                                     albumImageName: self.albumImage,
-                                     songUrl: self.songUrl,
-                                     duration: 29)
-    
-    
-    
     lazy var songs = [
         MusicItem(id: "1",
                   artist: self.artist,

@@ -6,9 +6,9 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct NowPlayingView: View {
-    
     @EnvironmentObject var vm: NowPlayingViewModel
     
     private var screenWidth: CGFloat {
@@ -24,9 +24,6 @@ struct NowPlayingView: View {
         .padding(.top, .design.padding8)
         .background(Color.theme.nowPlayingView)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .onAppear {
-            vm.loadSong(song: DeveloperPreview.instance.currentSong)
-        }
     }
 }
 
@@ -47,18 +44,19 @@ extension NowPlayingView {
     }
     
     private var progressView: some View {
-        PlayingProgressView(progress: $vm.currentProgress, canDrag: false)
+        PlayingProgressView(progress: $vm.progress, canDrag: false)
             .frame(height: 2)
     }
     
     private var songInfoView: some View {
         HStack(spacing: 8) {
-            Image(vm.currentSong.albumImageName)
+            KFImage(vm.currentSong?.imageURL)
                 .resizable()
                 .aspectRatio(1, contentMode: .fit)
                 .frame(width: 40, height: 40)
+                .background(Color.theme.secondaryBtn)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
-            
+
             songTitleAndDeviceView
         }
     }
@@ -79,15 +77,15 @@ extension NowPlayingView {
     
     private func getDisplaySongInfo() -> AttributedString {
         var displayStr = AttributedString("")
-        
-        var songName = AttributedString("\(vm.currentSong.songName) · ")
+
+        var songName = AttributedString("\(vm.currentSong?.title ?? "") · ")
         songName.foregroundColor = .white
         displayStr += songName
-        
-        var artistName = AttributedString("\(vm.currentSong.artist)")
+
+        var artistName = AttributedString("\(vm.currentSong?.artists ?? "")")
         artistName.foregroundColor = .secondaryTextColor2
         displayStr += artistName
-        
+
         return displayStr
     }
     
