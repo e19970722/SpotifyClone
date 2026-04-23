@@ -21,6 +21,7 @@ enum PlayingDevice: String {
 }
 
 class NowPlayingViewModel: ObservableObject {
+    @Published var tracks: [TrackItem]? = nil
     @Published var currentSong: TrackItem? = nil
     @Published var isPlaying: Bool = false
     @Published var isSeeking: Bool = false
@@ -34,52 +35,50 @@ class NowPlayingViewModel: ObservableObject {
     @Published var deviceName = "My Device"
 
     private var player: AVPlayer?
-    private var currentSongSubscription: AnyCancellable?
+    private var playingSubscription: AnyCancellable?
     private let nowPlayingService: NowPlayingServiceProtocol
 
     init(nowPlayingService: NowPlayingServiceProtocol = NowPlayingService()) {
         self.nowPlayingService = nowPlayingService
-        addCurrentSongSubscription()
+        self.addPlayingStateSubscription()
     }
-
-    private func addCurrentSongSubscription() {
-        currentSongSubscription = $currentSong
-            .sink { [weak self] track in
-                guard let self = self, let track = track else { return }
-                self.loadPlayer(track: track)
+    
+    func addPlayingStateSubscription() {
+        playingSubscription = $isPlaying
+            .sink { [weak self] isPlay in
+                guard let self = self else { return }
+                
+                if isPlay {
+                    player?.play()
+                    
+                } else {
+                    player?.pause()
+                }
             }
     }
     
-    func loadPlayer(track: TrackItem) {
+    func loadPlayer(tracks: [TrackItem], selectedTrack: TrackItem) {
         player?.pause()
         player = nil
         progress = 0.0
         lastProgressDrag = 0.0
         totalDuration = 0.0
         currentDuration = 0.0
+        currentSong = selectedTrack
         
         Task {
-            if let urlString = try await nowPlayingService.fetchPreviewUrl(trackName: track.title),
+            if let urlString = try await nowPlayingService.fetchPreviewUrl(trackName: selectedTrack.title),
                let url = URL(string: urlString) {
                 player = AVPlayer(url: url)
                 addMusicTimeObserver()
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
                     guard let self = self else { return }
-                    self.play()
+                    self.player?.play()
+                    self.isPlaying = true
                 }
             }
         }
-    }
-
-    func play() {
-        player?.play()
-        isPlaying = true
-    }
-
-    func pause() {
-        player?.pause()
-        isPlaying = false
     }
     
     func playerSeek(to progress: Double) {

@@ -119,11 +119,7 @@ extension NowPlayingView {
             
             Button {
                 vm.isPlaying.toggle()
-                if vm.isPlaying {
-                    vm.play()
-                } else {
-                    vm.pause()
-                }
+                
             } label: {
                 Image(systemName: vm.isPlaying ? "pause.fill" : "play.fill")
                     .resizable()

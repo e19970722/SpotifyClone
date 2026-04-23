@@ -161,7 +161,7 @@ extension NowPlayingFullScreenView {
 
             Button {
                 vm.isPlaying.toggle()
-                vm.isPlaying ? vm.play() : vm.pause()
+                
             } label: {
                 ZStack {
                     Circle()

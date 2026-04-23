@@ -10,15 +10,21 @@ import Kingfisher
 
 struct AlbumDetailView: View {
     @Environment(\.tabBarHeight) private var tabBarHeight
-
     @EnvironmentObject private var nowPlayingVM: NowPlayingViewModel
+    
     @StateObject private var albumVM: AlbumViewModel
 
+    @State private var isShuffle: Bool = false
+    
     let albumID: String
     private let isPlaylist: Bool
 
     private var album: AlbumItem {
         return albumVM.albumItem
+    }
+    
+    private var tracks: [TrackItem] {
+        return album.tracks ?? []
     }
 
     init(albumID: String) {
@@ -118,14 +124,32 @@ extension AlbumDetailView {
 
             Spacer()
 
-            Image(systemName: "shuffle")
-                .font(.system(size: 22))
-                .foregroundStyle(.gray)
-
             Button {
-                // play action
+                isShuffle.toggle()
+                
             } label: {
-                Image(systemName: "play.fill")
+                Image(systemName: "shuffle")
+                    .font(.system(size: 22))
+                    .foregroundStyle(isShuffle ? Color.theme.green : .gray)
+            }
+
+            let isContain = tracks.contains(where: { $0.id == nowPlayingVM.currentSong?.id })
+            Button {
+                nowPlayingVM.isPlaying.toggle()
+                guard !isContain else { return }
+                
+                if isShuffle,
+                   let randomIndex = (0...tracks.count-1).randomElement() {
+                    nowPlayingVM.loadPlayer(tracks: tracks,
+                                            selectedTrack: tracks[randomIndex])
+                    
+                } else if let firstTrack = tracks.first {
+                    nowPlayingVM.loadPlayer(tracks: tracks,
+                                            selectedTrack: firstTrack)
+                }
+                
+            } label: {
+                Image(systemName: (nowPlayingVM.isPlaying && isContain) ? "pause.fill" : "play.fill")
                     .font(.system(size: 22))
                     .foregroundStyle(.black)
                     .frame(width: 52, height: 52)
@@ -159,7 +183,7 @@ extension AlbumDetailView {
 
     private var trackListView: some View {
         VStack(spacing: 0) {
-            ForEach(album.tracks ?? []) { track in
+            ForEach(tracks) { track in
                 trackCellView(track)
             }
         }
@@ -216,7 +240,8 @@ extension AlbumDetailView {
         .padding(.vertical, 10)
         .contentShape(.rect)
         .onTapGesture {
-            nowPlayingVM.currentSong = track
+            nowPlayingVM.loadPlayer(tracks: tracks,
+                                    selectedTrack: track)
         }
     }
 }

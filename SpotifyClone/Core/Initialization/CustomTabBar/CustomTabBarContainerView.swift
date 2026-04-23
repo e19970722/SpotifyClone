@@ -68,7 +68,7 @@ extension CustomTabBarContainerView {
         VStack(spacing: 4) {
             if nowPlayingVM.currentSong != nil {
                 NowPlayingView()
-                    .padding(.horizontal, .design.padding16)
+                    .padding(.horizontal, .design.padding8)
                     .onTapGesture {
                         onTapNowPlaying()
                     }
