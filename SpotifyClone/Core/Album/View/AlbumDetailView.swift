@@ -215,7 +215,7 @@ extension AlbumDetailView {
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 52, height: 52)
                 .background(Color.theme.secondaryBtn)
-                .clipped()
+                .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(track.title)
