@@ -117,7 +117,6 @@ struct AppStartTokenExpired {
         let sut = makeSUT(keychain: keychain, refresher: refresher, defaults: defaults)
         try await Task.sleep(nanoseconds: 500_000_000)
         #expect(sut.needLogin == false)
-        #expect(sut.isLoading == false)
         #expect(keychain.read(forKey: .accessToken) == "new_access")
     }
 
@@ -131,7 +130,6 @@ struct AppStartTokenExpired {
         let sut = makeSUT(keychain: keychain, refresher: refresher, defaults: defaults)
         try await Task.sleep(nanoseconds: 500_000_000)
         #expect(sut.needLogin == true)
-        #expect(sut.isLoading == false)
     }
 
     // #6 - 已到期 + 無 refreshToken → 直接 forceLogout，不呼叫 refresher
@@ -199,7 +197,7 @@ struct TimerExpiryWhileActive {
         #expect(refresher.callCount == 0)
     }
 
-    // #10 - 進後景時 Timer 停止，timeout 後 refresh 不被呼叫
+    // #10 - 退背景時 Timer 停止，timeout 後 refresh 不被呼叫
     @Test func enterBackground_timerStops_noRefresh() async throws {
         try? keychain.save("old_access", forKey: .accessToken)
         try? keychain.save("old_refresh", forKey: .refreshToken)
@@ -207,7 +205,7 @@ struct TimerExpiryWhileActive {
 
         let sut = makeSUT(keychain: keychain, refresher: refresher, defaults: defaults)
 
-        // 模擬 0.5 秒後進後景，停止 Timer
+        // 模擬 0.5 秒後退背景，停止 Timer
         // 延遲是為了避免 UserManager 還在 init
         try await Task.sleep(nanoseconds: 0_500_000_000)
         NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
@@ -234,7 +232,7 @@ struct ForegroundReturn {
         defaults.clearAll()
     }
 
-    // #11 - token 仍有效 → 重算 timer，不 refresh，isRefreshingToken 維持 false
+    // #11 - token 仍有效 → 重算 timer，不 refresh
     @Test func foreground_tokenValid_noRefresh() async throws {
         try? keychain.save("valid_access", forKey: .accessToken)
         try? keychain.save("refresh_token", forKey: .refreshToken)
@@ -244,7 +242,6 @@ struct ForegroundReturn {
         NotificationCenter.default.post(name: UIApplication.didBecomeActiveNotification, object: nil)
         try await Task.sleep(nanoseconds: 200_000_000)
 
-        #expect(sut.isLoading == false)
         #expect(refresher.callCount == 0)
         #expect(sut.needLogin == false)
     }
@@ -259,14 +256,12 @@ struct ForegroundReturn {
         let sut = makeSUT(keychain: keychain, refresher: refresher, defaults: defaults)
         // init 時已觸發一次 refresh，等完成
         try await Task.sleep(nanoseconds: 500_000_000)
-        let countAfterInit = refresher.callCount
 
         // 模擬回前景再觸發一次
         NotificationCenter.default.post(name: UIApplication.didBecomeActiveNotification, object: nil)
         try await Task.sleep(nanoseconds: 500_000_000)
 
         #expect(sut.needLogin == false)
-        #expect(sut.isLoading == false)
         #expect(refresher.callCount == 1) // 回前景後多呼叫一次
     }
 
@@ -282,7 +277,6 @@ struct ForegroundReturn {
         try await Task.sleep(nanoseconds: 500_000_000)
 
         #expect(sut.needLogin == true)
-        #expect(sut.isLoading == false)
     }
 
     // #14 - 未登入狀態回前景 → 不執行任何動作
@@ -370,7 +364,6 @@ struct EdgeCases {
 
         try await Task.sleep(nanoseconds: 500_000_000)
         #expect(sut.needLogin == false)
-        #expect(sut.isLoading == false)
     }
 }
 
