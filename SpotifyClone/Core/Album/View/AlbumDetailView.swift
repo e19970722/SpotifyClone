@@ -86,11 +86,13 @@ extension AlbumDetailView {
         let scaled = scrollOffset > 0 ? (componentWidth - scrollOffset) / componentWidth : 1.0
         return KFImage(album.imageURL)
             .resizable()
-            .aspectRatio(1.0, contentMode: .fill)
+            .scaledToFit()
             .frame(width: componentWidth, height: componentWidth)
+            .background(.black)
             .opacity(scaled)
             .scaleEffect(scaled, anchor: .center)
-            .padding(.top, 16)
+            .clipShape(RoundedRectangle(cornerRadius: .design.padding8))
+            .padding(.top, .design.padding16)
             .frame(maxWidth: .infinity, alignment: .center)
     }
 
@@ -123,9 +125,9 @@ extension AlbumDetailView {
         HStack(spacing: 16) {
             KFImage(album.imageURL)
                 .resizable()
-                .aspectRatio(contentMode: .fill)
+                .scaledToFit()
                 .frame(width: 44, height: 44)
-                .clipped()
+                .background(.black)
 
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 24))
@@ -212,9 +214,9 @@ extension AlbumDetailView {
         HStack(alignment: .center, spacing: 12) {
             KFImage(track.imageURL)
                 .resizable()
-                .aspectRatio(contentMode: .fill)
+                .scaledToFit()
                 .frame(width: 52, height: 52)
-                .background(Color.theme.secondaryBtn)
+                .background(.black)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 4) {

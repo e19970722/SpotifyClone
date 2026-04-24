@@ -92,7 +92,7 @@ extension HomeView {
         HStack(alignment: .center, spacing: .design.padding8) {
             KFImage(userManager.userImageURL())
                 .resizable()
-                .aspectRatio(contentMode: .fit)
+                .scaledToFit()
                 .frame(width: 36, height: 36)
                 .clipShape(Circle())
             
@@ -164,9 +164,10 @@ extension HomeView {
         VStack(spacing: .design.padding8) {
             KFImage(imageURL)
                 .resizable()
-                .aspectRatio(contentMode: .fill)
+                .scaledToFit()
                 .frame(width: itemWidth, height: itemWidth)
                 .clipShape(RoundedRectangle(cornerRadius: 4))
+                .background(.black)
             
             Text(title ?? "")
                 .font(.system(size: 14, weight: .medium))

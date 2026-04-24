@@ -39,8 +39,9 @@ extension NewMusicView {
                let url = URL(string: urlString) {
                 KFImage(url)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .frame(width: 36, height: 36)
+                    .background(.black)
                     .clipShape(Circle())
             }
             

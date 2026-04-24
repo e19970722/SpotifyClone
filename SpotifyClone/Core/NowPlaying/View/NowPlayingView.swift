@@ -55,9 +55,9 @@ extension NowPlayingView {
         HStack(spacing: 8) {
             KFImage(vm.currentSong?.imageURL)
                 .resizable()
-                .aspectRatio(1, contentMode: .fit)
+                .scaledToFit()
                 .frame(width: 40, height: 40)
-                .background(Color.theme.secondaryBtn)
+                .background(.black)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             songTitleAndDeviceView

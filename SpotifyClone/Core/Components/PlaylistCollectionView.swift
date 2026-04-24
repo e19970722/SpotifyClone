@@ -42,7 +42,7 @@ extension PlaylistCollectionView {
     private func albumImage(size: CGFloat) -> some View {
         KFImage(imageURL)
             .resizable()
-            .aspectRatio(contentMode: .fill)
+            .scaledToFit()
             .frame(width: size, height: size)
             .clipped()
             .cornerRadius(2)

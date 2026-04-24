@@ -77,9 +77,9 @@ extension NowPlayingFullScreenView {
         let size = screenWidth - .design.padding16 * 2
         return KFImage(vm.currentSong?.imageURL)
             .resizable()
-            .aspectRatio(1, contentMode: .fit)
+            .scaledToFit()
             .frame(width: size, height: size)
-            .background(Color.theme.secondaryBtn)
+            .background(.black)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .padding(.bottom, 32)
     }
