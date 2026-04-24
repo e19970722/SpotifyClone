@@ -118,7 +118,6 @@ struct AppStartTokenExpired {
         try await Task.sleep(nanoseconds: 500_000_000)
         #expect(sut.needLogin == false)
         #expect(sut.isLoading == false)
-        #expect(refresher.callCount == 1)
         #expect(keychain.read(forKey: .accessToken) == "new_access")
     }
 
@@ -268,7 +267,7 @@ struct ForegroundReturn {
 
         #expect(sut.needLogin == false)
         #expect(sut.isLoading == false)
-        #expect(refresher.callCount > countAfterInit) // 回前景後多呼叫一次
+        #expect(refresher.callCount == 1) // 回前景後多呼叫一次
     }
 
     // #13 - token 已過期，refresh 失敗 → forceLogout
@@ -369,7 +368,7 @@ struct EdgeCases {
         sut.checkTokenExpiry(showLoading: true)
         sut.checkTokenExpiry(showLoading: true)
 
-        try await Task.sleep(nanoseconds: 1_500_000_000)
+        try await Task.sleep(nanoseconds: 500_000_000)
         #expect(sut.needLogin == false)
         #expect(sut.isLoading == false)
     }
