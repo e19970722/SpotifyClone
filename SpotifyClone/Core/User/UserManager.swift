@@ -160,20 +160,18 @@ final class UserManager: ObservableObject {
     }
 
     private func handleTokenExpired(showLoading: Bool = false) {
-        if showLoading {
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                self.isLoading = true
-            }
-        }
-
-        guard let refreshToken = keychainManager.read(forKey: .refreshToken) else {
+       guard let refreshToken = keychainManager.read(forKey: .refreshToken) else {
             logout()
             return
         }
 
         refreshTokenTask?.cancel()
         refreshTokenTask = Task {
+            await MainActor.run {
+                if showLoading {
+                    isLoading = true
+                }
+            }
             do {
                 let result = try await tokenRefresher.refreshAccessToken(refreshToken: refreshToken)
                 try Task.checkCancellation()
@@ -183,6 +181,8 @@ final class UserManager: ObservableObject {
                     isLoading = false
                 }
                 
+            } catch is CancellationError {
+                // 取消時不做事
             } catch {
                 await MainActor.run {
                     logout()
