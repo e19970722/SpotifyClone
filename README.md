@@ -1,3 +1,4 @@
 This is a Spotify clone app build with SwiftUI and MVVM architecture
 
-<img width="200" height="432" alt="RPReplay_Final1777294111-ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/7512cc5b-e737-476e-aa73-3db3f8d0b6aa" />
+<img width="250" height="540" alt="RPReplay_Final1777294111-ezgif com-resize" src="https://github.com/user-attachments/assets/8e63a18a-7f5d-422c-8f29-81b43dfc59a4" />
+
