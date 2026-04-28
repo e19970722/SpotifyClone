@@ -16,7 +16,6 @@ class HomeViewModel: ObservableObject {
     @Published var recentlyPlayed: [SpotifyRecentlyPlayedItem]? = nil
     
     private let service: HomeServiceProtocol
-    private var cancellables = Set<AnyCancellable>()
 
     init(service: HomeServiceProtocol = HomeService()) {
         self.service = service

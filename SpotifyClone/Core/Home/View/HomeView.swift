@@ -148,18 +148,6 @@ extension HomeView {
             .padding(.horizontal, .design.padding16)
     }
     
-    private func newMusicView(_ item: ItunesMusicVideo) -> some View {
-        NewMusicView(item: item)
-            .padding(.horizontal, .design.padding16)
-    }
-    
-    private func homeSectionsView(_ sections: [HomeSection]) -> some View {
-         ForEach(sections) { section in
-             HomeSectionView(section: section)
-                 .frame(height: screenHeight * section.heightPortion)
-         }
-     }
-    
     private func horizontalListView(itemWidth: CGFloat, imageURL: URL?, title: String?) -> some View {
         VStack(spacing: .design.padding8) {
             KFImage(imageURL)
