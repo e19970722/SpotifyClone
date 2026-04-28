@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B3E2CA992F61944100B0BFE1 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = B3E2CA982F61944100B0BFE1 /* Kingfisher */; };
+		B34502E32FA0A29D000D8F1C /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = B34502E22FA0A29D000D8F1C /* Kingfisher */; };
 		B3E2CA9C2F6196A700B0BFE1 /* CombineMoya in Frameworks */ = {isa = PBXBuildFile; productRef = B3E2CA9B2F6196A700B0BFE1 /* CombineMoya */; };
 		B3E2CA9E2F6196A700B0BFE1 /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = B3E2CA9D2F6196A700B0BFE1 /* Moya */; };
 /* End PBXBuildFile section */
@@ -23,6 +23,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B34502E02FA0951D000D8F1C /* Features */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Features; sourceTree = "<group>"; };
 		B3AE91212F90AB66001C51C1 /* SpotifyCloneTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpotifyCloneTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3E2CA092F618EA700B0BFE1 /* SpotifyClone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpotifyClone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -65,8 +66,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B34502E32FA0A29D000D8F1C /* Kingfisher in Frameworks */,
 				B3E2CA9C2F6196A700B0BFE1 /* CombineMoya in Frameworks */,
-				B3E2CA992F61944100B0BFE1 /* Kingfisher in Frameworks */,
 				B3E2CA9E2F6196A700B0BFE1 /* Moya in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -77,6 +78,7 @@
 		B3E2CA002F618EA700B0BFE1 = {
 			isa = PBXGroup;
 			children = (
+				B34502E02FA0951D000D8F1C /* Features */,
 				B3E2CA0B2F618EA700B0BFE1 /* SpotifyClone */,
 				B3AE91222F90AB66001C51C1 /* SpotifyCloneTests */,
 				B3E2CA0A2F618EA700B0BFE1 /* Products */,
@@ -135,9 +137,9 @@
 			);
 			name = SpotifyClone;
 			packageProductDependencies = (
-				B3E2CA982F61944100B0BFE1 /* Kingfisher */,
 				B3E2CA9B2F6196A700B0BFE1 /* CombineMoya */,
 				B3E2CA9D2F6196A700B0BFE1 /* Moya */,
+				B34502E22FA0A29D000D8F1C /* Kingfisher */,
 			);
 			productName = SpotifyClone;
 			productReference = B3E2CA092F618EA700B0BFE1 /* SpotifyClone.app */;
@@ -172,8 +174,8 @@
 			mainGroup = B3E2CA002F618EA700B0BFE1;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				B3E2CA972F61944100B0BFE1 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				B3E2CA9A2F6196A700B0BFE1 /* XCRemoteSwiftPackageReference "Moya" */,
+				B34502E12FA0A29D000D8F1C /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B3E2CA0A2F618EA700B0BFE1 /* Products */;
@@ -495,12 +497,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		B3E2CA972F61944100B0BFE1 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+		B34502E12FA0A29D000D8F1C /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 8.8.0;
+				kind = exactVersion;
+				version = 8.8.0;
 			};
 		};
 		B3E2CA9A2F6196A700B0BFE1 /* XCRemoteSwiftPackageReference "Moya" */ = {
@@ -514,9 +516,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B3E2CA982F61944100B0BFE1 /* Kingfisher */ = {
+		B34502E22FA0A29D000D8F1C /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = B3E2CA972F61944100B0BFE1 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			package = B34502E12FA0A29D000D8F1C /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
 		};
 		B3E2CA9B2F6196A700B0BFE1 /* CombineMoya */ = {
