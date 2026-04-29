@@ -26,7 +26,7 @@ struct SpotifyUserSavedAlbumWrapper: Decodable {
     }
 }
 
-struct SpotifyUserSavedAlbum: Decodable, Identifiable {
+struct SpotifyUserSavedAlbum: Decodable, Identifiable, Equatable {
     let id: String?
     let name: String?
     let albumType: String?
