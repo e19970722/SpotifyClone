@@ -12,13 +12,13 @@ import Kingfisher
 struct HomeView: View {
     @EnvironmentObject private var userManager: UserManager
     @Environment(\.tabBarHeight) private var tabBarHeight
-    
-    @StateObject private var homeVM: HomeViewModel
-    
+        
     @Binding var onTapSameTab: Bool
     
     @State private var path = NavigationPath()
     @State private var selectedSegment: HomeSegmentType = .all
+    
+    let store: StoreOf<HomeFeature>
     
     private var screenWidth: CGFloat {
         return UIScreen.main.bounds.width
@@ -28,8 +28,8 @@ struct HomeView: View {
         return UIScreen.main.bounds.height
     }
         
-    init(onTapSameTab: Binding<Bool>) {
-        _homeVM = StateObject(wrappedValue: HomeViewModel())
+    init(store: StoreOf<HomeFeature>, onTapSameTab: Binding<Bool>) {
+        self.store = store
         _onTapSameTab = onTapSameTab
     }
     
@@ -44,10 +44,10 @@ struct HomeView: View {
             }
             .background(Color.theme.background)
             .onAppear {
-                homeVM.fetchData()
+                store.send(.onAppear)
             }
             .onTabAppear(tab: .home) {
-                homeVM.fetchData()
+                store.send(.onAppear)
             }
             .navigationDestination(
                 for: HomePath.self,
@@ -58,7 +58,7 @@ struct HomeView: View {
                     path.removeLast(path.count)
                     
                 } else {
-                    homeVM.fetchData()
+                    store.send(.onAppear)
                 }
             }
         }
@@ -66,7 +66,9 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(onTapSameTab: .constant(false))
+    HomeView(store: .init(initialState: HomeFeature.State(),
+                          reducer: { HomeFeature() }),
+             onTapSameTab: .constant(false))
         .environmentObject(UserManager.instance)
 }
 
@@ -111,30 +113,9 @@ extension HomeView {
     
     private var mainListView: some View {
         VStack(spacing: 24) {
-            if let playlist = homeVM.playlists {
-                PlaylistCollectionSectionView(playlists: playlist,
-                                              onTap: { item in
-                    if let id = item.id {
-                        path.append(HomePath.playlistView(id: id))
-                    }
-                })
-                .frame(height: screenHeight * (257/874))
-                .padding(.horizontal, .design.padding16)
-            }
-            
-            if let albums = homeVM.savedAlbums {
-                VStack(spacing: .design.padding8) {
-                    titleView("Your Saved Albums")
-                    savedAlbums(albums)
-                }
-            }
-
-            if let items = homeVM.recentlyPlayed {
-                VStack(spacing: .design.padding8) {
-                    titleView("Recently Played")
-                    recentAlbums(items)
-                }
-            }
+            playlistsView
+            savedAlbumsView
+            recentlyPlayedView
         }
         .padding(.bottom, .design.padding16)
         .padding(.bottom, tabBarHeight)
@@ -166,45 +147,75 @@ extension HomeView {
         }
     }
     
-    private func savedAlbums(_ albums: [SpotifyUserSavedAlbum]) -> some View {
-        let width = (screenWidth - .design.padding16 * 3) / 2.5
-        return ScrollView(.horizontal, showsIndicators: false) {
-            LazyHStack(spacing: .design.padding16) {
-                ForEach(albums) { album in
-                    if let albumURLStr = album.images?.first?.url {
-                        horizontalListView(itemWidth: width,
-                                           imageURL: URL(string: albumURLStr),
-                                           title: album.name)
-                        .onTapGesture {
-                            if let id = album.id {
-                                path.append(HomePath.detailView(id: id))
-                            }
-                        }
+    @ViewBuilder
+    private var playlistsView: some View {
+        WithViewStore(store, observe: { $0.playlists }) { viewStore in
+            if let playlists = viewStore.state {
+                PlaylistCollectionSectionView(playlists: playlists,
+                                              onTap: { item in
+                    if let id = item.id {
+                        path.append(HomePath.playlistView(id: id))
                     }
-                }
+                })
+                .frame(height: screenHeight * (257/874))
+                .padding(.horizontal, .design.padding16)
             }
-            .padding(.horizontal, .design.padding16)
         }
     }
     
-    private func recentAlbums(_ items: [SpotifyRecentlyPlayedItem]) -> some View {
+    private var savedAlbumsView: some View {
         let width = (screenWidth - .design.padding16 * 3) / 2.5
-        return ScrollView(.horizontal, showsIndicators: false) {
-            LazyHStack(spacing: .design.padding16) {
-                ForEach(items) { item in
-                    if let albumURLStr = item.track?.album?.images?.first?.url {
-                        horizontalListView(itemWidth: width,
-                                           imageURL: URL(string: albumURLStr),
-                                           title: item.track?.album?.name)
-                        .onTapGesture {
-                            if let id = item.track?.album?.id {
-                                path.append(HomePath.detailView(id: id))
+        return VStack(spacing: .design.padding8) {
+            titleView("Your Saved Albums")
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: .design.padding16) {
+                    WithViewStore(store, observe: { $0.savedAlbums }) { viewStore in
+                        if let albums = viewStore.state {
+                            ForEach(albums) { album in
+                                if let albumURLStr = album.images?.first?.url {
+                                    horizontalListView(itemWidth: width,
+                                                       imageURL: URL(string: albumURLStr),
+                                                       title: album.name)
+                                    .onTapGesture {
+                                        if let id = album.id {
+                                            path.append(HomePath.detailView(id: id))
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
+                .padding(.horizontal, .design.padding16)
             }
-            .padding(.horizontal, .design.padding16)
+        }
+    }
+    
+    private var recentlyPlayedView: some View {
+        let width = (screenWidth - .design.padding16 * 3) / 2.5
+        return VStack(spacing: .design.padding8) {
+            titleView("Recently Played")
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: .design.padding16) {
+                    WithViewStore(store, observe: { $0.recentlyPlayed }) { viewStore in
+                        if let items = viewStore.state {
+                            ForEach(items) { item in
+                                if let albumURLStr = item.track?.album?.images?.first?.url {
+                                    horizontalListView(itemWidth: width,
+                                                       imageURL: URL(string: albumURLStr),
+                                                       title: item.track?.album?.name)
+                                    .onTapGesture {
+                                        if let id = item.track?.album?.id {
+                                            path.append(HomePath.detailView(id: id))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, .design.padding16)
+            }
         }
     }
 }

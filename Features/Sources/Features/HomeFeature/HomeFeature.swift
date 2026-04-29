@@ -39,7 +39,7 @@ struct HomeFeature: Reducer {
             
         case .fetchHomeData:
             return .run { send in
-                fetchHomeData(send: send)
+                await fetchHomeData(send: send)
             }
         
         // MARK: - Output Event
@@ -62,25 +62,23 @@ struct HomeFeature: Reducer {
 }
 
 extension HomeFeature {
-    func fetchHomeData(send: Send<HomeFeature.Action>) {
-        Task {
-            await withTaskGroup { group in
-                group.addTask {
-                    if let returnedValued = try? await self.homeService.fetchUserPlaylists(8, 0) {
-                        await send(.playlistLoaded(playlists: returnedValued.playlists))
-                    }
+    func fetchHomeData(send: Send<HomeFeature.Action>) async {
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask {
+                if let returnedValued = try? await self.homeService.fetchUserPlaylists(8, 0) {
+                    await send(.playlistLoaded(playlists: returnedValued.playlists))
                 }
-                
-                group.addTask {
-                    if let returnedValued = try? await self.homeService.fetchSavedAlbums(10, 0) {
-                        await send(.savedAlbumsLoaded(savedAlbums: returnedValued.items?.compactMap { $0.album }))
-                    }
+            }
+
+            group.addTask {
+                if let returnedValued = try? await self.homeService.fetchSavedAlbums(10, 0) {
+                    await send(.savedAlbumsLoaded(savedAlbums: returnedValued.items?.compactMap { $0.album }))
                 }
-                
-                group.addTask {
-                    if let returnedValued = try? await self.homeService.fetchRecentlyPlayed(10) {
-                        await send(.recentlyPlayedLoaded(recentlyPlayed: returnedValued.items))
-                    }
+            }
+
+            group.addTask {
+                if let returnedValued = try? await self.homeService.fetchRecentlyPlayed(10) {
+                    await send(.recentlyPlayedLoaded(recentlyPlayed: returnedValued.items))
                 }
             }
         }

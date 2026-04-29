@@ -5,13 +5,17 @@
 //  Created by Yen Lin on 2025/10/27.
 //
 
+import ComposableArchitecture
 import SwiftUI
 
 struct AppInitialView: View {
     
     @StateObject private var userManager: UserManager
-        
+    
+    let store: StoreOf<AppFeature>
+    
     init() {
+        self.store = .init(initialState: AppFeature.State(), reducer: { AppFeature() })
         _userManager = StateObject(wrappedValue: UserManager.instance)
     }
         
@@ -26,7 +30,7 @@ struct AppInitialView: View {
                 LoginView()
                 
             } else {
-                AppTabBarView()
+                AppTabBarView(store: store)
             }
         }
         .environmentObject(userManager)

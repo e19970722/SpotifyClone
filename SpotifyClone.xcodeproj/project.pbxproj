@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		B33C28272FA1A85C0081536B /* Features in Frameworks */ = {isa = PBXBuildFile; productRef = B33C28262FA1A85C0081536B /* Features */; };
-		B3E2CA9C2F6196A700B0BFE1 /* CombineMoya in Frameworks */ = {isa = PBXBuildFile; productRef = B3E2CA9B2F6196A700B0BFE1 /* CombineMoya */; };
-		B3E2CA9E2F6196A700B0BFE1 /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = B3E2CA9D2F6196A700B0BFE1 /* Moya */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,8 +64,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3E2CA9C2F6196A700B0BFE1 /* CombineMoya in Frameworks */,
-				B3E2CA9E2F6196A700B0BFE1 /* Moya in Frameworks */,
 				B33C28272FA1A85C0081536B /* Features in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -145,8 +141,6 @@
 			);
 			name = SpotifyClone;
 			packageProductDependencies = (
-				B3E2CA9B2F6196A700B0BFE1 /* CombineMoya */,
-				B3E2CA9D2F6196A700B0BFE1 /* Moya */,
 				B33C28262FA1A85C0081536B /* Features */,
 			);
 			productName = SpotifyClone;
@@ -182,7 +176,6 @@
 			mainGroup = B3E2CA002F618EA700B0BFE1;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				B3E2CA9A2F6196A700B0BFE1 /* XCRemoteSwiftPackageReference "Moya" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B3E2CA0A2F618EA700B0BFE1 /* Products */;
@@ -503,31 +496,10 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		B3E2CA9A2F6196A700B0BFE1 /* XCRemoteSwiftPackageReference "Moya" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Moya/Moya.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 15.0.3;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
 		B33C28262FA1A85C0081536B /* Features */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Features;
-		};
-		B3E2CA9B2F6196A700B0BFE1 /* CombineMoya */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B3E2CA9A2F6196A700B0BFE1 /* XCRemoteSwiftPackageReference "Moya" */;
-			productName = CombineMoya;
-		};
-		B3E2CA9D2F6196A700B0BFE1 /* Moya */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B3E2CA9A2F6196A700B0BFE1 /* XCRemoteSwiftPackageReference "Moya" */;
-			productName = Moya;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

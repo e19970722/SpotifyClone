@@ -14,8 +14,8 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", exact: "1.3.0"),
-        .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.0.0"),
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", exact: "1.26.0"),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.13.0"),
         .package(url: "https://github.com/onevcat/Kingfisher", exact: "8.8.0")
     ],
     targets: [
