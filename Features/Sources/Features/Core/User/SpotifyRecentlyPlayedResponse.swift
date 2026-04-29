@@ -20,7 +20,7 @@ struct SpotifyRecentlyCursors: Decodable {
     let before: String?
 }
 
-struct SpotifyRecentlyPlayedItem: Decodable, Identifiable {
+struct SpotifyRecentlyPlayedItem: Decodable, Identifiable, Equatable {
     var id: String { playedAt ?? UUID().uuidString }
     let track: SpotifyRecentlyPlayedTrack?
     let playedAt: String?
@@ -31,14 +31,14 @@ struct SpotifyRecentlyPlayedItem: Decodable, Identifiable {
     }
 }
 
-struct SpotifyRecentlyPlayedTrack: Decodable {
+struct SpotifyRecentlyPlayedTrack: Decodable, Equatable {
     let id: String?
     let name: String?
     let artists: [SpotifyArtistItem]?
     let album: SpotifyRecentlyPlayedTrackAlbum?
 }
 
-struct SpotifyRecentlyPlayedTrackAlbum: Decodable {
+struct SpotifyRecentlyPlayedTrackAlbum: Decodable, Equatable {
     let id: String?
     let name: String?
     let images: [SpotifyImage]?

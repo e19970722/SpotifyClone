@@ -84,7 +84,7 @@ struct SpotifyTrack: Decodable {
     }
 }
 
-struct SpotifyArtistItem: Decodable {
+struct SpotifyArtistItem: Decodable, Equatable {
     let name: String?
 }
 

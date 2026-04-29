@@ -16,11 +16,3 @@ struct SpotifyCloneAppV2: App {
         }
     }
 }
-
-struct AppFeature: Reducer {
-    struct State: Equatable { }
-    
-    enum Action: Equatable { }
-    
-    func reduce(into state: inout State, action: Action) -> Effect<Action> { }
-}

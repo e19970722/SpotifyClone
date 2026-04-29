@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PlaylistItem: Identifiable, Codable {
+struct PlaylistItem: Codable, Identifiable, Equatable {
     var id: String?
     let title: String?
     let imageURL: URL?
