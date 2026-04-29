@@ -49,7 +49,7 @@ extension CustomTabBarView {
 
                 Text(tab.title)
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(isSelected ? .white : .greyColor1)
+                    .foregroundStyle(isSelected ? .white : Color.theme.greyColor1)
             }
         }
         .frame(maxWidth: .infinity)
@@ -64,7 +64,7 @@ extension CustomTabBarView {
         return Image(systemName: iconImage)
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .tint(isSelected ? .white : .greyColor1)
+            .tint(isSelected ? .white : Color.theme.greyColor1)
             .frame(width: 24, height: 24)
     }
 }

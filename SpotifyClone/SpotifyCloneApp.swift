@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-@main
+//@main
 struct SpotifyCloneApp: App {
     var body: some Scene {
         WindowGroup {
-            AppInitialView()
+//            AppInitialView()
         }
     }
 }

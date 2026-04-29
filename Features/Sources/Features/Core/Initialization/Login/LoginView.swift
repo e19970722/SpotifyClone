@@ -14,7 +14,7 @@ struct LoginView: View {
     
     var body: some View {
         ZStack {
-            Color.greyColor1.ignoresSafeArea()
+            Color.theme.greyColor1.ignoresSafeArea()
             loginButton
         }
     }
@@ -48,7 +48,7 @@ extension LoginView {
                 .foregroundStyle(.black)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.vertical, 16)
-                .background(.greenColor1)
+                .background(Color.theme.green)
                 .clipShape(RoundedRectangle(cornerRadius: 36))
                 .padding(.horizontal, 48)
         }

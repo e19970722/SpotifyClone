@@ -11,16 +11,16 @@ struct AlbumImageTextView: View {
     
     let imageName: String
     let description: String
-    
+     
     var body: some View {
         VStack(alignment: .center, spacing: 8) {
-            Image(imageName)
+            Image(imageName, bundle: .module)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 
             Text(description)
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundColor(.secondaryTextColor2)
+                .foregroundColor(Color.theme.secondaryText2)
                 .minimumScaleFactor(0.5)
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)

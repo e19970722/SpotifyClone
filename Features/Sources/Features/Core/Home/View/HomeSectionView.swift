@@ -27,13 +27,11 @@ struct HomeSectionView: View {
 }
 
 #Preview {
-    if let firstSection = DeveloperPreview.instance.homeSections.first {
-        HomeSectionView(section: firstSection)
-            .background(.black)
-            .frame(width: UIScreen.main.bounds.size.width,
-                   height: UIScreen.main.bounds.size.height * 0.3)
-            .padding(.horizontal, 16)
-    }
+    HomeSectionView(section: .init(name: "", albums: []))
+        .background(.black)
+        .frame(width: UIScreen.main.bounds.size.width,
+               height: UIScreen.main.bounds.size.height * 0.3)
+        .padding(.horizontal, 16)
 }
 
 extension HomeSectionView {
