@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B34502E32FA0A29D000D8F1C /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = B34502E22FA0A29D000D8F1C /* Kingfisher */; };
+		B33C28272FA1A85C0081536B /* Features in Frameworks */ = {isa = PBXBuildFile; productRef = B33C28262FA1A85C0081536B /* Features */; };
 		B3E2CA9C2F6196A700B0BFE1 /* CombineMoya in Frameworks */ = {isa = PBXBuildFile; productRef = B3E2CA9B2F6196A700B0BFE1 /* CombineMoya */; };
 		B3E2CA9E2F6196A700B0BFE1 /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = B3E2CA9D2F6196A700B0BFE1 /* Moya */; };
 /* End PBXBuildFile section */
@@ -66,21 +66,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B34502E32FA0A29D000D8F1C /* Kingfisher in Frameworks */,
 				B3E2CA9C2F6196A700B0BFE1 /* CombineMoya in Frameworks */,
 				B3E2CA9E2F6196A700B0BFE1 /* Moya in Frameworks */,
+				B33C28272FA1A85C0081536B /* Features in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B33C28252FA1A85C0081536B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B3E2CA002F618EA700B0BFE1 = {
 			isa = PBXGroup;
 			children = (
 				B34502E02FA0951D000D8F1C /* Features */,
 				B3E2CA0B2F618EA700B0BFE1 /* SpotifyClone */,
 				B3AE91222F90AB66001C51C1 /* SpotifyCloneTests */,
+				B33C28252FA1A85C0081536B /* Frameworks */,
 				B3E2CA0A2F618EA700B0BFE1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -139,7 +147,7 @@
 			packageProductDependencies = (
 				B3E2CA9B2F6196A700B0BFE1 /* CombineMoya */,
 				B3E2CA9D2F6196A700B0BFE1 /* Moya */,
-				B34502E22FA0A29D000D8F1C /* Kingfisher */,
+				B33C28262FA1A85C0081536B /* Features */,
 			);
 			productName = SpotifyClone;
 			productReference = B3E2CA092F618EA700B0BFE1 /* SpotifyClone.app */;
@@ -175,7 +183,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				B3E2CA9A2F6196A700B0BFE1 /* XCRemoteSwiftPackageReference "Moya" */,
-				B34502E12FA0A29D000D8F1C /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B3E2CA0A2F618EA700B0BFE1 /* Products */;
@@ -497,14 +504,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		B34502E12FA0A29D000D8F1C /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
-			requirement = {
-				kind = exactVersion;
-				version = 8.8.0;
-			};
-		};
 		B3E2CA9A2F6196A700B0BFE1 /* XCRemoteSwiftPackageReference "Moya" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Moya/Moya.git";
@@ -516,10 +515,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B34502E22FA0A29D000D8F1C /* Kingfisher */ = {
+		B33C28262FA1A85C0081536B /* Features */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = B34502E12FA0A29D000D8F1C /* XCRemoteSwiftPackageReference "Kingfisher" */;
-			productName = Kingfisher;
+			productName = Features;
 		};
 		B3E2CA9B2F6196A700B0BFE1 /* CombineMoya */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -86,7 +86,7 @@ extension NowPlayingView {
         displayStr += songName
 
         var artistName = AttributedString("\(vm.currentSong?.artists ?? "")")
-        artistName.foregroundColor = .secondaryTextColor2
+        artistName.foregroundColor = Color.theme.secondaryText2
         displayStr += artistName
 
         return displayStr

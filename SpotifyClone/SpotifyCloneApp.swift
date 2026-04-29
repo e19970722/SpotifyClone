@@ -8,7 +8,7 @@
 import SwiftUI
 import AVFoundation
 
-@main
+//@main
 struct SpotifyCloneApp: App {
     
     init() {
@@ -17,7 +17,7 @@ struct SpotifyCloneApp: App {
     
     var body: some Scene {
         WindowGroup {
-            AppInitialView()
+//            AppInitialView()
         }
     }
 }

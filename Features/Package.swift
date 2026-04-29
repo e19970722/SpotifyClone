@@ -15,21 +15,29 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", exact: "1.3.0"),
+        .package(url: "https://github.com/onevcat/Kingfisher", exact: "8.8.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "Features",
-            dependencies: [.tca]
+            dependencies: [.tca, .kingfisher],
+            resources: [
+                .process("ColorAssets.xcassets"),
+                .process("ImageAssets.xcassets")
+            ],
+            swiftSettings: [.swiftLanguageMode(.v5)]
         ),
         .testTarget(
             name: "FeaturesTests",
-            dependencies: ["Features", .tca]
+            dependencies: ["Features", .tca],
+            swiftSettings: [.swiftLanguageMode(.v5)]
         ),
     ]
 )
 
 extension Target.Dependency {
     static let tca = Self.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+    static let kingfisher = Self.product(name: "Kingfisher", package: "Kingfisher")
 }
