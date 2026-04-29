@@ -5,9 +5,26 @@ import ComposableArchitecture
 import SwiftUI
 
 struct AppFeature: Reducer {
-    struct State: Equatable { }
+    struct State: Equatable {
+        var home: HomeFeature.State = .init()
+    }
     
-    enum Action: Equatable { }
+    enum Action: Equatable {
+        case home(HomeFeature.Action)
+    }
     
-    func reduce(into state: inout State, action: Action) -> Effect<Action> { }
+    var body: some ReducerOf<Self> {
+        Scope(state: \.home, action: /Action.home) {
+            HomeFeature()
+        }
+        
+        Reduce(core)
+    }
+    
+    func core(into state: inout State, action: Action) -> Effect<Action> {
+        switch action {
+        case .home:
+            return .none
+        }
+    }
 }

@@ -5,6 +5,7 @@
 //  Created by Yen Lin on 2025/12/5.
 //
 
+import ComposableArchitecture
 import SwiftUI
 
 struct AppTabBarView: View {
@@ -30,7 +31,10 @@ struct AppTabBarView: View {
     @State private var openUserID: String? = nil
     @State private var openArticleID: String? = nil
     
-    init() {
+    let store: StoreOf<AppFeature>
+    
+    init(store: StoreOf<AppFeature>) {
+        self.store = store
         _nowPlayingVM = StateObject(wrappedValue: NowPlayingViewModel())
     }
     
@@ -61,12 +65,14 @@ struct AppTabBarView: View {
 }
 
 #Preview {
-    AppTabBarView()
+    AppTabBarView(store: .init(initialState: AppFeature.State(),
+                               reducer: { AppFeature() }))
 }
 
 extension AppTabBarView {
     private var homeTab: some View {
-        HomeView(onTapSameTab: $onTapSameTabFirst)
+        HomeView(store: store.scope(state: \.home, action: { .home($0) }),
+                 onTapSameTab: $onTapSameTabFirst)
             .tabBarItem(tab: .home, selection: $tabSelection)
     }
     

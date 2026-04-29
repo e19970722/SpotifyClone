@@ -5,6 +5,7 @@
 //  Created by Yen Lin on 2025/10/27.
 //
 
+import ComposableArchitecture
 import SwiftUI
 
 struct AppInitialView: View {
@@ -14,7 +15,10 @@ struct AppInitialView: View {
     @State private var isLoading: Bool = false
     @State private var showLogin: Bool = false
     
+    let store: StoreOf<AppFeature>
+    
     init() {
+        self.store = .init(initialState: AppFeature.State(), reducer: { AppFeature() })
         _userManager = StateObject(wrappedValue: UserManager.instance)
     }
         
@@ -29,7 +33,7 @@ struct AppInitialView: View {
                     .background(.black)
                 
             } else if !showLogin {
-                AppTabBarView()
+                AppTabBarView(store: store)
             }
         }
         .environmentObject(userManager)
