@@ -24,7 +24,6 @@ struct AppInitialView: View {
                 
             } else if userManager.needLogin {
                 LoginView()
-                    .environmentObject(userManager)
                 
             } else {
                 AppTabBarView()
