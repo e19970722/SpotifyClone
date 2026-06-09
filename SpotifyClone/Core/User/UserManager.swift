@@ -15,7 +15,7 @@ final class UserManager: ObservableObject {
 
     @Published var needLogin: Bool = false
     @Published var defaultUser: SpotifyUser? = nil
-    @Published var isLoading: Bool = false
+    @Published var isLoading: Bool = true
 
     // MARK: - Private
 
@@ -80,6 +80,7 @@ final class UserManager: ObservableObject {
             self.clearTokensFromKeychain()
             self.defaultUser = nil
             self.needLogin = true
+            self.isLoading = false
         }
     }
 

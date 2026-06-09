@@ -10,10 +10,7 @@ import SwiftUI
 struct AppInitialView: View {
     
     @StateObject private var userManager: UserManager
-    
-    @State private var isLoading: Bool = false
-    @State private var showLogin: Bool = false
-    
+        
     init() {
         _userManager = StateObject(wrappedValue: UserManager.instance)
     }
@@ -22,30 +19,30 @@ struct AppInitialView: View {
         ZStack {
             Color.black
             
-            if isLoading {
-                ProgressView()
-                    .tint(.white)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(.black)
+            if userManager.isLoading {
+                loadingView
                 
-            } else if !showLogin {
+            } else if userManager.needLogin {
+                LoginView()
+                    .environmentObject(userManager)
+                
+            } else {
                 AppTabBarView()
             }
         }
         .environmentObject(userManager)
-        .fullScreenCover(isPresented: $showLogin) {
-            LoginView()
-                .environmentObject(userManager)
-        }
-        .onChange(of: userManager.isLoading) { isLoadingUser in
-            self.isLoading = isLoadingUser
-        }
-        .onChange(of: userManager.needLogin) { isNeedLogin in
-            self.showLogin = isNeedLogin
-        }
 	}
 }
 
 #Preview {
 	AppInitialView()
+}
+
+extension AppInitialView {
+    private var loadingView: some View {
+        ProgressView()
+            .tint(.white)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(.black)
+    }
 }
