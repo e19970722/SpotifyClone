@@ -112,6 +112,9 @@ final class UserManager: ObservableObject {
         if let expiryTimestamp = userDefaults.tokenExpiryDate {
             let expiryDate = Date(timeIntervalSince1970: expiryTimestamp)
             if expiryDate > Date() {
+                DispatchQueue.main.async {
+                    self.isLoading = false
+                }
                 scheduleExpiryTimer(at: expiryDate)
                 fetchUserInfo()
 
